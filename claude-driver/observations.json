@@ -1,0 +1,7 @@
+{
+  "strip_visible": true,
+  "opus_statusline_title": "claude-opus-4-8",
+  "opus_statusline_text": "ctx 25.2k/1.0M (3%) · turn $0.472 · convo $0.472 API-equiv",
+  "sonnet_statusline_title": "claude-opus-4-8",
+  "sonnet_statusline_text": "ctx 25.2k/1.0M (3%) · turn $0.472 · convo $0.472 API-equiv"
+}
