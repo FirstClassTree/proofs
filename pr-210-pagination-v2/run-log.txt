@@ -1,0 +1,71 @@
+== dev login ==
+  /api/dev/login -> 200 http://localhost:3000/studio
+
+== B: /studio with CHATS collapsed (default pref) ==
+[intercept #1] /api/conversations
+     -> rows 1-50 (50 rows, nextCursor=2026-08-18T05:42:59.336Z~conv-050, total=450)
+  collapsed stats: {"rows":0,"unique":0,"badge":"450","expanded":"false","scrollTop":null,"scrollHeight":null,"clientHeight":null,"loadingRow":false,"sentinel":null}
+  ASSERT badge === "450" -> PASS
+  ASSERT rows === 0     -> PASS
+  shot -> 01-collapsed-badge-450.png
+  shot -> 02-collapsed-badge-crop.png
+  shot -> 03-collapsed-rail.png
+
+== C: open the CHATS section ==
+  opened stats: {"rows":50,"unique":50,"first":"Chat 001 newest","last":"Chat 050 page 1","badge":null,"expanded":"true","scrollTop":0,"scrollHeight":2013,"clientHeight":414,"loadingRow":false,"sentinel":true}
+  ASSERT rows === 50 -> PASS
+  ASSERT badge hidden when open -> PASS
+  shot -> 04-open-first-50-top.png
+  shot -> 05-open-first-50-rail-crop.png
+
+== D: scroll to bottom until the whole history is in hand ==
+[intercept #2] /api/conversations?before=2026-08-18T05%3A42%3A59.336Z~conv-050
+     -> rows 51-100 (50 rows, nextCursor=2026-08-09T21:42:59.336Z~conv-100, total=null)
+  rows: 50 -> 100
+[intercept #3] /api/conversations?before=2026-08-09T21%3A42%3A59.336Z~conv-100
+     -> rows 101-150 (50 rows, nextCursor=2026-08-01T13:42:59.336Z~conv-150, total=null)
+  rows: 100 -> 150
+[intercept #4] /api/conversations?before=2026-08-01T13%3A42%3A59.336Z~conv-150
+     -> rows 151-200 (50 rows, nextCursor=2026-07-24T05:42:59.336Z~conv-200, total=null)
+  rows: 150 -> 200
+[intercept #5] /api/conversations?before=2026-07-24T05%3A42%3A59.336Z~conv-200
+     -> rows 201-250 (50 rows, nextCursor=2026-07-15T21:42:59.336Z~conv-250, total=null)
+  rows: 200 -> 250
+[intercept #6] /api/conversations?before=2026-07-15T21%3A42%3A59.336Z~conv-250
+     -> rows 251-300 (50 rows, nextCursor=2026-07-07T13:42:59.336Z~conv-300, total=null)
+  rows: 250 -> 300
+[intercept #7] /api/conversations?before=2026-07-07T13%3A42%3A59.336Z~conv-300
+     -> rows 301-350 (50 rows, nextCursor=2026-06-29T05:42:59.336Z~conv-350, total=null)
+  rows: 300 -> 350
+[intercept #8] /api/conversations?before=2026-06-29T05%3A42%3A59.336Z~conv-350
+     -> rows 351-400 (50 rows, nextCursor=2026-06-20T21:42:59.336Z~conv-400, total=null)
+  rows: 350 -> 400
+[intercept #9] /api/conversations?before=2026-06-20T21%3A42%3A59.336Z~conv-400
+     -> rows 401-450 (50 rows, nextCursor=null, total=null)
+  rows: 400 -> 450
+  final stats: {"rows":450,"unique":450,"first":"Chat 001 newest","last":"Chat 450 oldest","badge":null,"expanded":"true","scrollTop":16993,"scrollHeight":17407,"clientHeight":414,"loadingRow":false,"sentinel":false}
+  DOM progression: 50 -> 100 -> 150 -> 200 -> 250 -> 300 -> 350 -> 400 -> 450
+  duplicate check: {"total":450,"unique":450,"duplicates":[]}
+  ASSERT 450 rows, 450 unique -> PASS
+  ASSERT loader gone at end -> PASS
+  ASSERT sentinel gone (cursor null) -> PASS
+  shot -> 06-bottom-oldest-no-loader.png
+  shot -> 07-bottom-rail-crop.png
+  requests during idle + extra scroll at the end: 0
+
+== badge after the full load (collapse again) ==
+  recollapsed stats: {"rows":0,"unique":0,"badge":"450","expanded":"false","scrollTop":null,"scrollHeight":null,"clientHeight":null,"loadingRow":false,"sentinel":null}
+  ASSERT badge still "450" -> PASS
+  shot -> 08-recollapsed-badge-450.png
+
+== URL chain ==
+  1. /api/conversations  [50 rows, total=450]
+  2. /api/conversations?before=2026-08-18T05%3A42%3A59.336Z~conv-050  [50 rows, total=null]
+  3. /api/conversations?before=2026-08-09T21%3A42%3A59.336Z~conv-100  [50 rows, total=null]
+  4. /api/conversations?before=2026-08-01T13%3A42%3A59.336Z~conv-150  [50 rows, total=null]
+  5. /api/conversations?before=2026-07-24T05%3A42%3A59.336Z~conv-200  [50 rows, total=null]
+  6. /api/conversations?before=2026-07-15T21%3A42%3A59.336Z~conv-250  [50 rows, total=null]
+  7. /api/conversations?before=2026-07-07T13%3A42%3A59.336Z~conv-300  [50 rows, total=null]
+  8. /api/conversations?before=2026-06-29T05%3A42%3A59.336Z~conv-350  [50 rows, total=null]
+  9. /api/conversations?before=2026-06-20T21%3A42%3A59.336Z~conv-400  [50 rows, total=null]
+  bare=1 cursored=8

@@ -1,0 +1,65 @@
+[
+  {
+    "url": "http://127.0.0.1:3000/api/conversations",
+    "before": null,
+    "nextCursor": "2026-08-18T05:42:59.336Z~conv-050",
+    "count": 50,
+    "total": 450
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-08-18T05%3A42%3A59.336Z~conv-050",
+    "before": "2026-08-18T05:42:59.336Z~conv-050",
+    "nextCursor": "2026-08-09T21:42:59.336Z~conv-100",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-08-09T21%3A42%3A59.336Z~conv-100",
+    "before": "2026-08-09T21:42:59.336Z~conv-100",
+    "nextCursor": "2026-08-01T13:42:59.336Z~conv-150",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-08-01T13%3A42%3A59.336Z~conv-150",
+    "before": "2026-08-01T13:42:59.336Z~conv-150",
+    "nextCursor": "2026-07-24T05:42:59.336Z~conv-200",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-07-24T05%3A42%3A59.336Z~conv-200",
+    "before": "2026-07-24T05:42:59.336Z~conv-200",
+    "nextCursor": "2026-07-15T21:42:59.336Z~conv-250",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-07-15T21%3A42%3A59.336Z~conv-250",
+    "before": "2026-07-15T21:42:59.336Z~conv-250",
+    "nextCursor": "2026-07-07T13:42:59.336Z~conv-300",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-07-07T13%3A42%3A59.336Z~conv-300",
+    "before": "2026-07-07T13:42:59.336Z~conv-300",
+    "nextCursor": "2026-06-29T05:42:59.336Z~conv-350",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-06-29T05%3A42%3A59.336Z~conv-350",
+    "before": "2026-06-29T05:42:59.336Z~conv-350",
+    "nextCursor": "2026-06-20T21:42:59.336Z~conv-400",
+    "count": 50,
+    "total": null
+  },
+  {
+    "url": "http://127.0.0.1:3000/api/conversations?before=2026-06-20T21%3A42%3A59.336Z~conv-400",
+    "before": "2026-06-20T21:42:59.336Z~conv-400",
+    "nextCursor": null,
+    "count": 50,
+    "total": null
+  }
+]
