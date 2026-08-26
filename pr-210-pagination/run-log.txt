@@ -1,0 +1,37 @@
+== dev login ==
+  /api/dev/login -> 200 http://localhost:3000/studio
+== load /studio (page 1) ==
+[intercept #1] http://127.0.0.1:3000/api/conversations  -> page1 (200 rows, nextCursor=2026-07-24T04:41:56.395Z~conv-200)
+  stats after page1: {"rows":200,"unique":200,"first":"Chat 001 newest","last":"Chat 200 page 1","scrollTop":0,"scrollHeight":7810,"clientHeight":414,"loadingRow":false,"sentinels":3}
+  shot -> 01-desktop-page1-top.png
+== scroll rail to bottom -> page 2 ==
+[intercept #2] http://127.0.0.1:3000/api/conversations?before=2026-07-24T04%3A41%3A56.395Z~conv-200  -> page2 (200 rows, nextCursor=2026-06-20T20:41:56.395Z~conv-400)
+  mid-flight stats: {"rows":200,"unique":200,"first":"Chat 001 newest","last":"Chat 200 page 1","scrollTop":7423,"scrollHeight":7837,"clientHeight":414,"loadingRow":true,"sentinels":3}
+  shot -> 02-desktop-loading-older-midflight.png
+  shot -> 03-desktop-loading-row-rail-crop.png
+  stats after page2: {"rows":400,"unique":400,"first":"Chat 001 newest","last":"Chat 400 page 2","scrollTop":7423,"scrollHeight":15489,"clientHeight":414,"loadingRow":false,"sentinels":3}
+  geometry before: {"scrollTop":0,"top":6223.640625,"left":8,"width":158.21875,"height":38.390625}
+  geometry after : {"scrollTop":0,"top":6223.640625,"left":8,"width":158.21875,"height":38.390625}
+  seam scrollTop: 7548
+  seam rows: ["Chat 199 page 1:in-view","Chat 200 page 1:in-view","Chat 201 page 2:in-view","Chat 202 page 2:in-view"]
+  shot -> 04-desktop-seam-page1-page2.png
+  shot -> 04b-desktop-seam-rail-crop.png
+== scroll to bottom again -> page 3 ==
+[intercept #3] http://127.0.0.1:3000/api/conversations?before=2026-06-20T20%3A41%3A56.395Z~conv-400  -> page3 (50 rows, nextCursor=null)
+  stats after page3: {"rows":450,"unique":450,"first":"Chat 001 newest","last":"Chat 450 oldest","scrollTop":16993,"scrollHeight":17407,"clientHeight":414,"loadingRow":false,"sentinels":2}
+  shot -> 05-desktop-bottom-oldest-no-loader.png
+  shot -> 06-desktop-bottom-rail-crop.png
+  requests during idle+extra scroll at end of list: 0
+  rail row typography: {"rowFont":"body, \"body Fallback\", system-ui, sans-serif","rowSize":"14px","rowColor":"rgb(20, 24, 30)","rowPad":"8px"}
+  duplicate check: {"total":450,"unique":450,"duplicates":[]}
+== mobile 390x844 ==
+[intercept #1] http://127.0.0.1:3000/api/conversations  -> page1 (200 rows, nextCursor=2026-07-24T04:41:56.395Z~conv-200)
+  drawer opener count: 1
+  chat row visible after drawer open: true
+  shot -> 07-mobile-drawer-page1.png
+[intercept #2] http://127.0.0.1:3000/api/conversations?before=2026-07-24T04%3A41%3A56.395Z~conv-200  -> page2 (200 rows, nextCursor=2026-06-20T20:41:56.395Z~conv-400)
+  shot -> 08-mobile-loading-older.png
+  mobile stats after page2: {"rows":400,"unique":400,"first":"Chat 001 newest","last":"Chat 400 page 2","scrollTop":7479,"scrollHeight":15489,"clientHeight":358,"loadingRow":false,"sentinels":4}
+  mobile seam scrollTop: 7576
+  shot -> 09-mobile-seam-page1-page2.png
+  mobile intercepts: ["http://127.0.0.1:3000/api/conversations","http://127.0.0.1:3000/api/conversations?before=2026-07-24T04%3A41%3A56.395Z~conv-200"]
