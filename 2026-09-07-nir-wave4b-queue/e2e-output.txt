@@ -1,0 +1,27 @@
+PASS  a submitted turn puts the composer in the running state (Stop is showing)
+PASS  Escape clears the composer instead of the run: textarea === ""  - textarea=""
+PASS  Escape mid-run posts nothing to /api/studio/stop: stopCalls === 0 - stopCalls=0
+PASS  Escape mid-run starts no new turn: turns.length === 1 - turns=1
+PASS  the run is still live after Escape: the Stop button is still visible
+PASS  the queued chip shows the typed message: chip contains "queued question one" - "queued question one\nEDIT\nSends when the agent finishes"
+PASS  Enter mid-run posts nothing to /api/studio/stop: stopCalls === 0 - stopCalls=0
+PASS  Enter mid-run starts no second turn: turns.length === 1 - turns=1
+PASS  the run is NOT stopped: the first POST /api/studio is still open (not aborted) - fulfilled=null
+PASS  no killed banner: "We stopped this run before it finished." is absent
+PASS  the chip says when it goes: "Sends when the agent finishes"
+PASS  the queue is in sessionStorage under shapeless.queued-message.<conversationId> - stored={"text":"queued question one","attachments":[]}
+PASS  a second queued message appends: chip contains both "queued question one" and "and one more" - "queued question one and one more\nEDIT\nSends when the agent finishes"
+PASS  Edit puts the queued text back in the composer: textarea === "queued question one\nand one more" - "queued question one\nand one more"
+PASS  Edit removes the chip
+PASS  Cancel removes the chip
+PASS  Cancel clears sessionStorage: getItem(key) === null - stored=null
+PASS  the run ending sends the queued message: a POST /api/studio carries goal === "send me the thumbnail too" - matching POSTs=1, all goals=["make me a launch video for a solo founder","send me the thumbnail too"]
+PASS  the queued message is sent exactly once (no duplicate turn) - turns=2
+PASS  the chip clears once it is sent
+PASS  the first turn's response was consumed, never aborted: fulfilled === 'ok' - fulfilled=ok
+PASS  the chip survives a reload: it still reads "also post it to LinkedIn" - "also post it to LinkedIn\nEDIT\nSends when the agent finishes"
+PASS  the reload restored it from sessionStorage, not from the server - stored={"text":"also post it to LinkedIn","attachments":[]}
+PASS  a durable run ending (the poll path) sends it too: exactly one POST with goal === "also post it to LinkedIn" - matching POSTs=1, new turns=1
+PASS  still no /api/studio/stop was ever posted: stopCalls === 0 - stopCalls=0
+
+25/25 checks passed
