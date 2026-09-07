@@ -1,0 +1,152 @@
+[
+  {
+    "name": "A1 the page you were on is never navigated away",
+    "pass": true,
+    "detail": "original stayed at http://localhost:3000/studio/accounts"
+  },
+  {
+    "name": "A2 Connect opens a NEW tab carrying returnTo",
+    "pass": true,
+    "detail": "popup opened at http://localhost:3000/api/connections/x?returnTo=%2Fstudio%2Faccounts"
+  },
+  {
+    "name": "A3 the new tab holds no handle back",
+    "pass": true,
+    "detail": "window.opener in the new tab === null"
+  },
+  {
+    "name": "A4 the original tab is still open",
+    "pass": true,
+    "detail": "page.isClosed() === false"
+  },
+  {
+    "name": "A5 the real connect route redirects into the platform",
+    "pass": true,
+    "detail": "307 -> https://x.com/i/oauth2/authorize?response_type=code&client_i..."
+  },
+  {
+    "name": "A6 the signed flight cookie carries returnTo",
+    "pass": true,
+    "detail": "flight.returnTo === \"/studio/c/abc123\""
+  },
+  {
+    "name": "A7 an off-site returnTo is dropped by the server",
+    "pass": true,
+    "detail": "flight.returnTo === undefined"
+  },
+  {
+    "name": "B1 the original tab showed no connection before the connect",
+    "pass": true,
+    "detail": "matches for \"@local-review\" before === 0"
+  },
+  {
+    "name": "B2 the BroadcastChannel signal reaches the original tab",
+    "pass": true,
+    "detail": "window.__signals === [\"storage\",\"broadcast\"]"
+  },
+  {
+    "name": "B3 the original tab re-fetched /api/connections",
+    "pass": true,
+    "detail": "GET /api/connections count 3 -> 5"
+  },
+  {
+    "name": "B4 the original tab's connection list re-rendered with the new account",
+    "pass": true,
+    "detail": "\"@local-review\" is now on the accounts screen"
+  },
+  {
+    "name": "B5 the landing hands the new tab back to returnTo",
+    "pass": true,
+    "detail": "landing ended at http://localhost:3000/studio/accounts"
+  },
+  {
+    "name": "B6 without BroadcastChannel the storage stamp still refreshes the tab",
+    "pass": true,
+    "detail": "the account appeared in a tab whose window.BroadcastChannel is undefined"
+  },
+  {
+    "name": "D1 the shelf shows \"Earlier renders\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Earlier renders\" is on screen"
+  },
+  {
+    "name": "D1 the shelf shows \"Footage\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Footage\" is on screen"
+  },
+  {
+    "name": "D1 the shelf shows \"Voiceover\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Voiceover\" is on screen"
+  },
+  {
+    "name": "D1 the shelf shows \"Captions\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Captions\" is on screen"
+  },
+  {
+    "name": "D1 the shelf shows \"Script\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Script\" is on screen"
+  },
+  {
+    "name": "D1 the shelf shows \"Published\"",
+    "pass": true,
+    "detail": "a shelf group labelled \"Published\" is on screen"
+  },
+  {
+    "name": "D2 the shelf counts a group with more than one artifact",
+    "pass": true,
+    "detail": "the group reads \"Footage · 3\""
+  },
+  {
+    "name": "D3a the superseded render lands on the shelf",
+    "pass": true,
+    "detail": "1 tile inside the shelf with aria-label \"Launch short - take 1\""
+  },
+  {
+    "name": "D3b the newest take stays in the payoff and never doubles onto the shelf",
+    "pass": true,
+    "detail": "\"Launch short - take 2\" appears once on the page and zero times inside the shelf"
+  },
+  {
+    "name": "D3c a spec whose render is on screen is not repeated as an artifact",
+    "pass": true,
+    "detail": "0 matches for the spec title \"Shot list v1\""
+  },
+  {
+    "name": "D4 the voiceover is playable on the shelf",
+    "pass": true,
+    "detail": "1 <audio> element rendered"
+  },
+  {
+    "name": "D5 the caption track's own lines are on the shelf",
+    "pass": true,
+    "detail": "the second caption line is on screen"
+  },
+  {
+    "name": "D6 a publish receipt links out to the live post",
+    "pass": true,
+    "detail": "the receipt href is the published URL"
+  },
+  {
+    "name": "C1 Enter in the time field commits the schedule",
+    "pass": true,
+    "detail": "exactly 1 POST /api/posts fired from a keypress, no click"
+  },
+  {
+    "name": "C2 the committed schedule carries the time that was typed",
+    "pass": true,
+    "detail": "scheduledAt === 2026-09-08T10:31:00.000Z for typed 2026-09-08T13:31"
+  },
+  {
+    "name": "C3 the card moves to its scheduled state",
+    "pass": true,
+    "detail": "\"Scheduled\" is on the card"
+  },
+  {
+    "name": "C4 committing never navigates the page",
+    "pass": true,
+    "detail": "still at http://localhost:3000/studio/c/e2e-wave4-shelf"
+  }
+]
