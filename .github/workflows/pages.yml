@@ -1,0 +1,30 @@
+# Deploys this branch (the PR review cards) to GitHub Pages.
+# Replaces the legacy "pages build and deployment": each card push started its own deploy, and a
+# second push within a minute failed with "in progress deployment", mailing Tal a failure every
+# time (2026-10-11). One concurrency group queues pushes instead: the running deploy finishes,
+# the newest waiting push deploys next, older waiting ones are skipped.
+name: pages
+on:
+  push:
+    branches: [pages]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deploy
+        uses: actions/deploy-pages@v5
