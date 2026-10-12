@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shapeless Employees</title>
+<title>ShapelessAI Employees</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@15/lib/marked.umd.js"></script>
 <style>
 :root{--bg:#f4f5f7;--rail:#fff;--card:#fff;--ink:#101828;--mute:#667085;--faint:#98a2b3;--line:#e4e7ec;--soft:#f2f4f7;--top:#121a2d;--topink:#e8ecf5;--topmute:#8f9bb8;--you:#2f5bea;--pa:#7c3aed;--cos:#0e9f6e;--red:#d92d20;--amber:#dc6803;--green:#079455;--new:#fef0c7;--sel:#eef2ff;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
  --a-pages:#2f5bea;--a-studio:#6938ef;--a-extension:#9e77ed;--a-API:#0e9aa7;--a-CLI:#0b7285;--a-money:#d92d20;--a-data:#e04f16;--a-server:#17b26a;--a-engine:#079455;--a-prompts:#dd2590;--a-tooling:#667085;--a-config:#98a2b3;--a-docs:#d0d5dd;--a-tests:#a6ef67;--a-other:#e4e7ec}
@@ -17,21 +18,25 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,-apple-s
 a{color:var(--you);text-decoration:none}a:hover{text-decoration:underline}
 button{font:inherit;cursor:pointer}
 h1,h2,h3,h4{font-weight:600;letter-spacing:-.01em}
-/* top bar */
-.top{display:flex;align-items:center;gap:8px 18px;padding:0 20px;min-height:54px;background:var(--top);color:var(--topink);flex-wrap:wrap}
-.top .brand{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:8px}
-.top .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#2f5bea,#7c3aed);display:inline-block}
+/* top bar: one line, never wraps; the people chips shrink before the brand does */
+.top{display:flex;align-items:center;gap:14px;padding:0 16px;height:52px;background:var(--top);color:var(--topink);flex-wrap:nowrap;overflow:hidden}
+.top .brand{flex:none;font-weight:700;font-size:15px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.top .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#2f5bea,#7c3aed);display:inline-block;flex:none}
 .top .brand small{font-weight:500;color:var(--topmute)}
-.top .meta{color:var(--topmute);font-size:12px}
-.top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:100%;padding:8px 0}
-.person{display:flex;align-items:center;gap:9px;border-radius:10px;padding:5px 8px 5px 10px;background:rgba(255,255,255,.06);max-width:100%}
+.top .meta{color:var(--topmute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto}
+.top .meta b{color:#fcd34d;font-weight:500}
+.top .right{margin-left:auto;display:flex;gap:6px;align-items:center;flex:0 1 auto;min-width:0}
+.person{display:flex;align-items:center;gap:7px;border-radius:9px;padding:4px 6px 4px 9px;background:rgba(255,255,255,.06);min-width:0}
 .person .nm{font-weight:600;font-size:12.5px;white-space:nowrap;color:var(--topink)}
 .person .st{font-size:11px;color:var(--topmute);white-space:nowrap}
 .person.live .st{color:#4ade80}
-.person .copy{background:rgba(255,255,255,.08);border-color:transparent;color:var(--topink)}
-.whoBtn{border:1px solid rgba(255,255,255,.18);background:transparent;color:var(--topink);border-radius:999px;padding:5px 11px;font-size:12px}
-.since{font-size:12px;color:#fcd34d;white-space:nowrap}
-/* shared atoms */
+.person .ib{border:0;background:rgba(255,255,255,.08);color:var(--topink);border-radius:6px;width:26px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.person .ib:hover{background:rgba(255,255,255,.18)}
+.person .ib.ok{background:var(--green)}
+@media (max-width:1280px){.top .meta{display:none}}
+@media (max-width:1040px){.person .st{display:none}}
+@media (max-width:700px){.person{padding:4px 4px}.person .nm{display:none}.top{gap:8px}.top .brand small{display:none}}
+/* atoms */
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;line-height:1;padding:5px 9px;border-radius:999px;background:var(--soft);color:var(--mute);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .pill.red{background:#fee4e2;color:#b42318}.pill.amber{background:#fef0c7;color:#b54708}.pill.green{background:#dcfae6;color:#067647}.pill.blue{background:#e0eaff;color:#2f5bea}.pill.new{background:var(--new);color:#93370d}
 .pill.solid.red{background:var(--red);color:#fff}.pill.solid.amber{background:var(--amber);color:#fff}.pill.solid.green{background:var(--green);color:#fff}.pill.solid.grey{background:var(--mute);color:#fff}
@@ -40,30 +45,45 @@ h1,h2,h3,h4{font-weight:600;letter-spacing:-.01em}
 .dot.pa{background:var(--pa)}.dot.cos{background:var(--cos)}.dot.you{background:var(--you)}.dot.red{background:var(--red)}.dot.amber{background:var(--amber)}.dot.green{background:var(--green)}.dot.grey{background:var(--faint)}.dot.blue{background:var(--you)}
 .copy{border:1px solid var(--line);background:var(--soft);border-radius:7px;padding:3px 9px;font:12px ui-monospace,Menlo,monospace;color:var(--ink);display:inline-flex;gap:7px;align-items:center;max-width:100%}
 .copy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.copy:hover{border-color:var(--you)}
-.copy.ok{border-color:var(--green);color:var(--green)}
+.copy:hover{border-color:var(--you)}.copy.ok{border-color:var(--green);color:var(--green)}
 .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:500;display:inline-flex;gap:7px;align-items:center;white-space:nowrap;box-shadow:var(--shadow)}
 .btn:hover{border-color:var(--faint);text-decoration:none}
 .btn.go{background:var(--you);color:#fff;border-color:var(--you)}
 .btn.danger{color:var(--red)}
 .btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
 .btn kbd{font:11px ui-monospace,Menlo,monospace;background:rgba(127,127,127,.2);border-radius:4px;padding:1px 5px}
+/* text from records is clamped; a click opens it (Tal, 2026-10-11: "endless text ... would just be ignored") */
+.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;cursor:pointer;overflow-wrap:anywhere}
+.clamp.one{-webkit-line-clamp:1}.clamp.two{-webkit-line-clamp:2}.clamp.six{-webkit-line-clamp:6}
+.clamp.open{display:block;-webkit-line-clamp:unset}
+/* dates: every screen opens with when it was opened, when it last moved, when it was done, and the
+   deadline with how far it is (Tal, 2026-10-12: "no dates for when things were created ... decide by
+   a specific date is also contextless") */
+.when{display:flex;gap:6px 14px;flex-wrap:wrap;color:var(--mute);font-size:12.5px;margin:0 0 14px;align-items:center}
+.when span b{color:var(--ink);font-weight:500}
+.when .due{color:var(--red);font-weight:600}.when .due.far{color:var(--amber)}
+.when .ok{color:var(--green)}
+.cap{font-size:11px;color:var(--faint);white-space:nowrap}
 /* layout */
 .wrap{display:flex;flex:1;min-height:0}
-.rail{width:336px;flex:none;border-right:1px solid var(--line);background:var(--rail);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+.rail{width:320px;flex:none;border-right:1px solid var(--line);background:var(--rail);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
 .chips{display:flex;gap:6px;padding:12px 14px 6px;flex-wrap:wrap}
 .chips button{border:1px solid var(--line);background:var(--card);color:var(--mute);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500}
 .chips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.group{padding:6px 0 2px}
-.group h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0;padding:10px 16px 4px;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;font-weight:600}
-.group h2 .n{color:var(--ink);font-weight:700;background:var(--soft);border-radius:6px;padding:1px 6px}
-.group h2 .sub{text-transform:none;letter-spacing:0;font-weight:400;margin-left:auto;font-size:11px;white-space:nowrap}
+.group{padding:2px 0}
+.group h2{font-size:12px;color:var(--ink);margin:0;padding:9px 16px 9px 14px;display:grid;grid-template-columns:10px 26px minmax(0,1fr) auto;gap:8px;align-items:center;cursor:pointer;user-select:none;font-weight:600}
+.group h2:hover{background:var(--soft)}
+.group h2 .n{color:var(--mute);font-weight:600;font-size:12px;text-align:right}
+.group h2 .mini{display:flex;gap:4px;align-items:center;font-weight:500;font-size:11px;color:var(--mute);white-space:nowrap}
+.group h2 .mini b{display:inline-flex;align-items:center;gap:3px;font-weight:600;color:var(--ink)}
 .group h2::before{content:"▾";color:var(--faint);font-size:10px}
 .group.closed h2::before{content:"▸"}
 .group.closed .rows{display:none}
-.row{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 16px 8px 14px;cursor:pointer;border-left:3px solid transparent}
+.group.sel h2{background:var(--sel)}
+.row{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 16px 7px 14px;cursor:pointer;border-left:3px solid transparent}
 .row:hover{background:var(--soft)}
 .row.sel{background:var(--sel);border-left-color:var(--you)}
+.row.lead{border-left-color:transparent;border-bottom:1px solid var(--line)}
 .row .t{font-size:13.5px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .row .s{font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .b{display:flex;gap:4px;align-items:center;flex:none}
@@ -72,9 +92,8 @@ h1,h2,h3,h4{font-weight:600;letter-spacing:-.01em}
 .sub-h i{width:8px;height:8px;border-radius:2px;display:inline-block}
 .pane{flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 30px 80px;min-width:0}
 .pane h1{font-size:21px;margin:0 0 8px;line-height:1.3;overflow-wrap:anywhere}
-.hdr{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
-.sec{margin:0 0 18px;padding:0 0 16px;border-bottom:1px solid var(--line)}
-.sec:last-child{border-bottom:0}
+.hdr{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+.sec{margin:0 0 18px}
 .sec h3,.card h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;font-weight:600}
 .sec p{margin:4px 0;overflow-wrap:anywhere}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:0 0 14px;box-shadow:var(--shadow)}
@@ -92,26 +111,63 @@ h1,h2,h3,h4{font-weight:600;letter-spacing:-.01em}
 .bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;margin:10px 0;display:flex}
 .bar b{display:block;height:100%;background:var(--cos)}.bar b.red{background:var(--red)}.bar b.amber{background:var(--amber)}
 .hist{list-style:none;padding:0;margin:0;font-size:13px}
-.hist li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:4px 0;color:var(--mute)}
+.hist li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding:4px 0;color:var(--mute)}
 .hist li b{color:var(--ink);font-weight:500;overflow-wrap:anywhere}
-textarea,input.in{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit;background:var(--card);color:var(--ink)}
-textarea{min-height:64px;resize:vertical}
-textarea:focus,input.in:focus{outline:0;border-color:var(--you)}
-.legend{position:fixed;right:16px;bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:12px;color:var(--mute);max-width:min(440px,calc(100vw - 32px));max-height:70vh;overflow:auto;box-shadow:0 8px 30px rgba(16,24,40,.14)}
-.legend b{color:var(--ink)}
-.legend .who{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;margin-top:8px}
-.legend.hide{display:none}
+input.in{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;background:var(--card);color:var(--ink)}
+input.in:focus{outline:0;border-color:var(--you)}
 .empty{color:var(--mute);padding:40px;text-align:center}
 .err{background:#fee4e2;color:#b42318;border-radius:10px;padding:8px 12px;font-size:12.5px;margin:0 0 12px}
-/* visuals */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:0 0 14px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;box-shadow:var(--shadow)}
-.kpi:hover{border-color:var(--faint)}
+/* short cards side by side */
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 14px}
+.trio .card{margin:0;padding:12px 14px;font-size:13px}
+.trio .card h3{margin-bottom:6px}
+/* why add, why not: the two sides of every PR, decision and ledger row (Tal, 2026-10-12) */
+.sides{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:0 0 14px}
+.side{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;border-top:3px solid var(--green);box-shadow:var(--shadow)}
+.side.no{border-top-color:var(--red)}
+.side h3{margin-bottom:6px}
+.side .num2{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+/* the path to live: who does what, in order */
+.steps{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.step{display:inline-flex;gap:7px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 7px;font-size:12.5px;background:var(--card)}
+.step b{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:999px;background:var(--soft);color:var(--mute)}
+.step b.you{background:#e0eaff;color:#2f5bea}.step b.done{background:#dcfae6;color:#067647}
+.steps .arr{color:var(--faint)}
+/* options with their for and against */
+.opts2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:0 0 14px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.opt.first{border-color:var(--you)}
+.opt .fa{font-size:12.5px;display:grid;grid-template-columns:14px minmax(0,1fr);gap:4px 8px}
+.opt .fa b{font-weight:700;font-family:ui-monospace,Menlo,monospace}
+.opt .fa .p{color:var(--green)}.opt .fa .m{color:var(--red)}
+.opt .fa span{color:var(--mute);overflow-wrap:anywhere}
+/* the author's words: markdown rendered, tables and all */
+.md{font-size:13.5px;line-height:1.55;overflow-wrap:anywhere}
+.md p{margin:4px 0}.md ul,.md ol{margin:4px 0;padding-left:20px}.md li{margin:2px 0}
+.md table{border-collapse:collapse;font-size:12.5px;margin:8px 0;max-width:100%}
+.md th,.md td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}.md th{background:var(--soft);font-weight:600}
+.md code{font:12px ui-monospace,Menlo,monospace;background:var(--soft);padding:1px 4px;border-radius:4px}
+.md pre{background:var(--soft);padding:8px 10px;border-radius:8px;overflow-x:auto}
+.md h1,.md h2,.md h3,.md h4{font-size:13px;margin:10px 0 4px}
+.md img{display:none}
+/* explainer pages, inline */
+.frames{display:grid;gap:10px}
+.frame{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.frame summary{cursor:pointer;padding:9px 12px;font-size:13px;font-weight:500;display:flex;gap:8px;align-items:center;list-style:none}
+.frame summary::-webkit-details-marker{display:none}
+.frame summary::before{content:"▸";color:var(--faint);font-size:11px}
+.frame[open] summary::before{content:"▾"}
+.frame summary .cap{margin-left:auto}
+.frame iframe{display:block;width:100%;height:70vh;border:0;border-top:1px solid var(--line);background:#fff}
+/* summary */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:0 0 14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;box-shadow:var(--shadow);color:inherit;display:block}
+.kpi:hover{border-color:var(--faint);text-decoration:none}
 .kpi .l{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:600}
 .kpi .v{font-size:28px;font-weight:700;line-height:1.1;margin:6px 0 4px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
 .kpi .v small{font-size:13px;color:var(--mute);font-weight:500}
 .kpi .v.red{color:var(--red)}.kpi .v.green{color:var(--green)}
-.kpi .s{font-size:12px;color:var(--mute)}
+.kpi .s{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .now{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .ncard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
 .ncard .t{font-weight:600;line-height:1.35;cursor:pointer}
@@ -127,6 +183,7 @@ textarea:focus,input.in:focus{outline:0;border-color:var(--you)}
 .blk:hover{border-color:var(--faint);text-decoration:none}
 .blk.High{border-left-color:var(--red)}.blk.Med{border-left-color:var(--amber)}.blk.Low{border-left-color:var(--green)}
 .blk .n{font-weight:600;font-family:ui-monospace,Menlo,monospace}
+.blk .d{float:right;color:var(--faint);font-size:10.5px}
 .blk .sz{display:block;height:3px;background:var(--line);border-radius:2px;margin-top:5px;overflow:hidden}
 .blk .sz i{display:block;height:100%;background:var(--mute)}
 .blk .tt{display:block;color:var(--mute);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -139,11 +196,13 @@ textarea:focus,input.in:focus{outline:0;border-color:var(--you)}
 .tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .tl .day{background:var(--soft);border-radius:12px;padding:9px}
 .tl .day h4{margin:0 0 6px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
-.tl .ev{display:block;font-size:12px;padding:3px 0;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.tl .ev::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:1px}
-.tl .ev.m::before{background:var(--faint)}
-.said{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;font-size:13px}
+.tl .ev{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;font-size:12px;padding:3px 0;color:var(--ink);cursor:pointer;align-items:baseline}
+.tl .ev span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .ev small{color:var(--faint);font-size:10.5px;font-feature-settings:"tnum"}
+.tl .ev.m{color:var(--mute)}
+.said{display:grid;grid-template-columns:auto 70px minmax(0,1fr);gap:6px 10px;font-size:13px;align-items:start}
 .said .q{overflow-wrap:anywhere}.said .q small{display:block;color:var(--mute)}
+.said .d{color:var(--faint);font-size:11.5px;white-space:nowrap;padding-top:3px}
 .map{height:14px;border-radius:7px;overflow:hidden;display:flex;background:var(--soft)}
 .map i{display:block;height:100%}
 .lg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;color:var(--mute)}
@@ -159,18 +218,67 @@ textarea:focus,input.in:focus{outline:0;border-color:var(--you)}
 .files summary i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px}
 .files div{font:12px ui-monospace,Menlo,monospace;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:18px}
 .files div small{color:var(--faint)}
-/* workers and sheets */
+/* the team: chips on the summary, tiles on the board */
+.team{display:flex;flex-direction:column;gap:8px}
+.team .tm{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:start}
+.team .tm h4{margin:0;font-size:11.5px;color:var(--mute);font-weight:600;padding-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.team .tm h4:hover{color:var(--you)}
+.chipset{display:flex;flex-wrap:wrap;gap:5px}
+.wchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 9px 3px 7px;font-size:12px;background:var(--card);cursor:pointer;max-width:100%}
+.wchip:hover{border-color:var(--faint)}
+.wchip.failed{border-color:var(--red)}.wchip.blocked{border-color:var(--amber)}.wchip.paused{color:var(--faint)}
+.wchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wchip small{color:var(--mute);font-feature-settings:"tnum"}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.wt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:5px;box-shadow:var(--shadow)}
+.wt:hover{border-color:var(--faint)}
+.wt.failed{border-color:var(--red)}.wt.blocked{border-color:var(--amber)}.wt.paused{opacity:.6}
+.wt .h{display:flex;gap:7px;align-items:center;font-weight:600;font-size:13px}
+.wt .h span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wt .w{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--mute)}
+.wt .w .sc{margin-left:auto;font-weight:600;color:var(--ink)}
+.sorts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 12px;font-size:12px;color:var(--mute)}
+.sorts button{border:1px solid var(--line);background:var(--card);color:var(--mute);border-radius:999px;padding:3px 10px;font-size:12px}
+.sorts button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select.sort{font:12px Inter,sans-serif;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:2px 6px}
+table.sheet th{cursor:pointer;user-select:none;white-space:nowrap}table.sheet th:hover{color:var(--ink)}table.sheet th.on{color:var(--ink)}
+table.sheet td.x{white-space:nowrap;color:var(--mute);text-align:right;font-feature-settings:"tnum"}
+table.sheet td.p{color:#067647}table.sheet td.m{color:#b42318}
+.wt .l{font-size:11.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .week{display:inline-flex;gap:3px;align-items:flex-end}
 .week i{display:block;width:10px;height:10px;border-radius:3px;background:var(--line)}
 .week i.ok{background:var(--green)}.week i.failed{background:var(--red)}.week i.today{outline:2px solid var(--you);outline-offset:1px}
-.list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.list li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px;font-size:13.5px;line-height:1.45}
+.score{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.score i{display:block;width:60px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.score i b{display:block;height:100%;background:var(--green)}
+.score.part i b{background:var(--amber)}
+/* a worker's output: one tile per thing it made, the link's icon up front, the date in the corner */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.tile{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;color:inherit;box-shadow:var(--shadow);align-items:start;position:relative}
+.tile:hover{border-color:var(--faint);text-decoration:none}
+.tile.ask{border-color:var(--amber);background:#fffaf0}.tile.no{border-color:var(--red)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tile.ask{background:#2a1f08}}
+.tile img,.tile .ic{width:28px;height:28px;border-radius:8px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--mute)}
+.tile .host{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:60px;min-height:15px}
+.tile .cap{position:absolute;top:12px;right:12px}
+.tile .tx{font-size:13px;line-height:1.4;margin-top:2px}
+.tile .ask-why{font-size:12px;color:#93370d;margin-top:4px}
+.runs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.run{border:1px solid var(--line);border-radius:9px;padding:6px 9px;font-size:12px;cursor:pointer;display:inline-flex;gap:7px;align-items:center;background:var(--card)}
+.run:hover{border-color:var(--faint)}.run.sel{border-color:var(--you);background:var(--sel)}
+.run .dot{width:7px;height:7px}
+.run small{color:var(--mute)}.run b{font-weight:600;font-size:11.5px}
+.runtext{font-size:13px;color:var(--ink);background:var(--soft);border-radius:10px;padding:10px 12px}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.list li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px;font-size:13px;line-height:1.45}
 .list li b{font:700 13px ui-monospace,Menlo,monospace;color:var(--green)}
 .list li.no b{color:var(--red)}.list li.ask b{color:var(--amber)}
 .list li span{overflow-wrap:anywhere}
-.blocker{background:#fef0c7;color:#93370d;border-radius:10px;padding:10px 12px;font-size:13px}
+.blocker{background:#fef0c7;color:#93370d;border-radius:10px;padding:10px 12px;font-size:13px;margin:0 0 14px}
 .blocker.red{background:#fee4e2;color:#b42318}
 .blocker small{display:block;margin-top:4px;opacity:.8}
+.talk{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.talk .in{flex:1;min-width:200px;width:auto}
 .seg{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--soft);margin:8px 0 10px}
 .seg b{display:block;height:100%;cursor:pointer}
 .seg .live{background:var(--green)}.seg .waiting{background:var(--amber)}.seg .blocked{background:var(--red)}.seg .todo{background:var(--you)}.seg .off{background:var(--faint)}
@@ -179,37 +287,35 @@ textarea:focus,input.in:focus{outline:0;border-color:var(--you)}
 table.sheet{width:100%;border-collapse:collapse;font-size:12.5px}
 table.sheet th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);padding:6px 8px;border-bottom:1px solid var(--line);font-weight:600}
 table.sheet td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
-table.sheet td.n{font-weight:500;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
-table.sheet td.w{color:var(--mute);max-width:520px}
+table.sheet td.n{font-weight:500;max-width:220px}
+table.sheet td.n small{display:block;color:var(--faint);font-weight:400;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.sheet td.w{color:var(--mute);max-width:420px;min-width:150px}
 table.sheet tr.hide{display:none}
 .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
 .tools input{flex:1;min-width:160px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:inherit;background:var(--card);color:var(--ink)}
 /* standalone card */
-body.standalone .top,body.standalone .rail,body.standalone .legend{display:none}
+body.standalone .top,body.standalone .rail{display:none}
 body.standalone .pane{max-width:1120px;margin:0 auto;padding:28px 28px 80px}
 .cardhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--mute);font-size:12.5px;margin:0 0 14px}
 .cardhead b{color:var(--ink)}
-@media (max-width:860px){.wrap{flex-direction:column}.rail{width:100%;max-height:42vh;border-right:0;border-bottom:1px solid var(--line)}.pane{padding:16px}.legend{display:none}.vis{grid-template-columns:1fr}.reach{grid-template-columns:repeat(3,minmax(0,1fr))}.top .right{margin-left:0}.person{padding:4px 8px}.person .st{display:none}.tl{grid-template-columns:1fr}.kv{grid-template-columns:1fr}}
+@media (max-width:860px){.wrap{flex-direction:column}.rail{width:100%;max-height:42vh;border-right:0;border-bottom:1px solid var(--line)}.pane{padding:16px}.vis{grid-template-columns:1fr}.reach{grid-template-columns:repeat(3,minmax(0,1fr))}.tl{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.team .tm{grid-template-columns:1fr}.said{grid-template-columns:auto minmax(0,1fr)}.said .d{display:none}}
 </style>
 </head>
 <body>
 <div class="top">
-<div class="brand"><i></i>Shapeless <small>Employees</small></div>
-<span class="meta" id="built"></span>
-<span class="since" id="since"></span>
+<div class="brand"><i></i>ShapelessAI <small>Employees</small></div>
+<span class="meta" id="meta"></span>
 <div class="right" id="people"></div>
 </div>
 <div class="wrap">
 <nav class="rail" id="rail"></nav>
 <main class="pane" id="pane"><div class="empty">Pick an item. j / k move, 1 2 3 act, Enter opens the real thing.</div></main>
 </div>
-<div class="legend hide" id="legend"></div>
-<script id="data" type="application/json">{"builtAt":"Sun 11 Oct, 16:15","lastLooked":"2026-10-11T13:14:58.181Z","items":[{"id":"pr-site-444","kind":"pr","number":444,"repo":"shapelessAI-Website","repoShort":"site","title":"posthog:dashboard: pack other tiles under ours; tiles added without a position no longer pile onto one spot","url":"https://github.com/FirstClassTree/shapelessAI-Website/pull/444","isDraft":false,"labels":[],"additions":25,"deletions":8,"changedFiles":1,"created":"2026-10-11T10:40:17Z","updated":"2026-10-11T10:40:17Z","sha":"15fdf4cdfbe8427df90a3fed4dc4dbd3539dd114","who":"a Claude Code session","owner":"cos","employee":"","employeeRun":"","session":"claude --resume posthog-flood","sessionLabel":"claude --resume posthog-flood","labelled":false,"files":["tools/posthog-dashboard.mjs"],"stats":[{"path":"tools/posthog-dashboard.mjs","a":25,"d":8,"area":"tooling"}],"map":[{"area":"tooling","files":1,"lines":33}],"images":[],"gate":null,"triage":{"repo":"site","number":444,"sha":"15fdf4cdfbe8427df90a3fed4dc4dbd3539dd114","at":"2026-10-11T11:53:45.520Z","by":"opus 5.5 reviewer, 2026-10-11 session","what":"Re-running the PostHog dashboard script no longer piles new tiles onto one spot; other tiles are packed neatly under ours.","why":"The 10-11 run of npm run posthog:dashboard stacked eleven API-added tiles on one spot and left a 20-row hole in the Morning dashboard.","touches":["tooling","observability"],"user_visible":false,"impact":"Nothing on the site; Tal's Morning and API & MCP PostHog dashboards stay readable on every re-run.","risk":"low","risk_why":"A layout bug would only rearrange PostHog dashboard tiles, which re-running fixes.","verified":"Ran against PostHog; both dashboards read back with zero overlapping positions (links in body); no test added.","gaps":[],"overlaps":[437],"recommend":"merge and deploy","recommend_why":"Local tooling only, already run and checked against the live dashboards, nothing to deploy.","minutes":1,"stale":false},"critical":"Low","criticalWhy":"internal","needsYou":true,"minutes":1}],"who":[],"unreviewed":[],"people":[],"standalone":true,"select":""}</script>
+<script id="data" type="application/json">{"builtAt":"Mon 12 Oct, 08:51","lastLooked":"2026-10-12T05:50:59.119Z","items":[{"id":"pr-site-444","kind":"pr","number":444,"repo":"shapelessAI-Website","repoShort":"site","title":"posthog:dashboard: pack other tiles under ours; tiles added without a position no longer pile onto one spot","url":"https://github.com/FirstClassTree/shapelessAI-Website/pull/444","isDraft":false,"labels":[],"additions":25,"deletions":8,"changedFiles":1,"created":"2026-10-11T10:40:17Z","updated":"2026-10-11T13:15:57Z","sha":"15fdf4cdfbe8427df90a3fed4dc4dbd3539dd114","who":"a Claude Code session","owner":"cos","employee":"","employeeRun":"","session":"claude --resume posthog-flood","sessionLabel":"claude --resume posthog-flood","labelled":false,"files":["tools/posthog-dashboard.mjs"],"stats":[{"path":"tools/posthog-dashboard.mjs","a":25,"d":8,"area":"tooling"}],"map":[{"area":"tooling","files":1,"lines":33}],"images":[],"sections":{"why":"The Morning dashboard was wrecked by the 10-11 run of `npm run posthog:dashboard` (from #440): eleven tiles added by API since 10-09 (the free-to-paid funnel, week-2 retention, X balance, lifecycle clicks, the hand-made event-flood tile) had no position. The layout step only shifted y and treated a missing position as y0, so all eleven were stamped onto one spot at y20 and the classic tiles were pushed 20 rows down behind a hole.","what":"The step now keeps our tiles at their fixed positions and packs every other tile under them: two across, each at its own size, in the order it had. Tiles without a position, or sharing one, go last, oldest first. Idempotent on re-runs.","verified":"Ran it; both dashboards read back from the API with zero overlapping positions: [Morning](https://us.posthog.com/project/499883/dashboard/1927754) (33 tiles, classic rows right under ours, the eleven new ones packed two across at the bottom), [API & MCP](https://us.posthog.com/project/499883/dashboard/2149368) (8).\n\ncc posthog-flood. Claude Code session: https://claude.ai/code/session/5ea872de-df01-4714-8670-053dd2f71213"},"explainers":[],"card":"https://firstclasstree.github.io/proofs/pr-cards/site-444.html","initiative":"","gate":null,"triage":{"repo":"site","number":444,"sha":"15fdf4cdfbe8427df90a3fed4dc4dbd3539dd114","at":"2026-10-12T05:45:50.989Z","by":"opus reviewer (panel.mjs review)","what":"`npm run posthog:dashboard` keeps our tiles at their fixed spots and packs every other tile below them, two across, so tiles added through the API stop stacking on one spot.","why":"The 10-11 run piled eleven API-added tiles onto one spot at y20 and pushed the classic Morning tiles 20 rows down behind an empty gap.","why_add":"The Morning (33 tiles) and API & MCP (8 tiles) dashboards stay readable each time the script runs again, so funnel, retention and lifecycle tiles stop hiding under each other. The PostHog fix is already live because the author ran the script. Merging only stops the old code from breaking the layout again on the next run.","why_not":"Nothing beyond review time. The script is a local ops tool that never ships in the site image. One small cost: when a hand-arranged dashboard has a tall tile next to two short stacked ones, the packer places them in plain rows instead of keeping that arrangement.","to_ship":["Tal: merge (no site deploy needed, it is a local script)"],"touches":["tools/posthog-dashboard script","PostHog dashboard layout"],"user_visible":false,"impact":"Customers see nothing. Tal sees the Morning and API & MCP PostHog dashboards laid out cleanly, and they stay that way on later runs.","risk":"low","risk_why":"It only rewrites tile positions on internal PostHog dashboards, and a rerun fixes them. The worst case is a hand-made arrangement of tiles turning into plain two-across rows.","verified":"The author ran the script against prod PostHog and read both dashboards back through the API: zero overlapping positions on Morning (33 tiles) and API & MCP (8 tiles), and the body links both dashboards. There are no automated tests and no CI checks on the PR.","gaps":["No unit test for the packer, for example tiles with no position, tiles sharing a spot, and tiles wider than 12","Nothing checks that tiles from earlier runs (if PostHog returns them) are skipped"],"overlaps":[],"recommend":"merge and deploy","recommend_why":"It is a 33-line change to one internal script, already run and checked on the live dashboards, and it touches no API, money or user surface. Merging is the whole ship.","minutes":1,"stale":false},"critical":"Low","criticalWhy":"internal","needsYou":true,"minutes":1}],"unreviewed":[],"people":[],"standalone":true,"select":""}</script>
 <script>
 const D = JSON.parse(document.getElementById('data').textContent);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const since = new Date(D.lastLooked);
-const age = (iso) => { if (!iso) return ''; const d = (Date.now() - new Date(iso)) / 864e5; return d < 1 ? 'today' : d < 2 ? '1 day' : `${Math.floor(d)} days`; };
 const isNew = (it) => it.updated && new Date(it.updated) > since;
 const RISK = { none: 'grey', low: 'green', medium: 'amber', high: 'red' };
 const CRIT = { High: 'red', Med: 'amber', Low: 'green' };
@@ -218,45 +324,76 @@ const AREA = (a) => `var(--a-${a === 'CLI and MCP' ? 'CLI' : a})`;
 const REACH = [['Users', ['pages', 'studio', 'extension', 'server']], ['Agents', ['API', 'CLI and MCP']], ['Money', ['money']], ['Data', ['data']], ['Engine', ['engine', 'prompts']], ['Only us', ['tooling', 'config', 'docs', 'tests', 'other']]];
 const TEAM = { assistant: 'Your assistant', found: 'Found by AI and search', links: 'Links and listings', people: 'Reaching people', dating: 'Dating', product: 'The product', upkeep: 'Upkeep' };
 const WTONE = { failed: 'red', blocked: 'amber', running: 'blue', due: 'grey', ran: 'green', idle: 'grey', paused: 'grey' };
+const WORDER = ['failed', 'blocked', 'running', 'due', 'ran', 'idle', 'paused'];
 const owner = (it) => it.owner === 'pa' ? 'pa' : it.owner === 'you' ? 'you' : 'cos';
 const spark = (v, w = 110, h = 24, color = 'var(--cos)') => { if (!v?.length) return ''; const max = Math.max(...v), min = Math.min(...v); const pts = v.map((x, i) => `${(i / Math.max(1, v.length - 1)) * (w - 4) + 2},${h - 3 - ((x - min) / (max - min || 1)) * (h - 8)}`); return `<svg class="spark" width="${w}" height="${h}" style="color:${color}"><polyline fill="none" stroke="currentColor" stroke-width="1.8" points="${pts.join(' ')}"/><circle r="2.6" fill="currentColor" cx="${pts.at(-1).split(',')[0]}" cy="${pts.at(-1).split(',')[1]}"/></svg>`; };
 const copyBtn = (text, label) => text ? `<button class="copy" data-copy="${esc(text)}" title="copy ${esc(text)}"><span>${esc(label || text)}</span> ⧉</button>` : '';
+const shortCmd = (c) => c.replace(/([0-9a-f]{8})-[0-9a-f-]{27}/, '$1…');
+// Talk: a `claude --resume` or `claude attach` command runs in a Terminal window through home.
+const talkBtn = (cmd, label, cls = 'btn go') => /^claude (--resume|attach) /.test(cmd) ? `<button class="${cls}" data-term="${esc(cmd)}" title="${esc(cmd)}">▶ ${esc(label)}</button>` : '';
+const clamp = (t, n = '') => t ? `<div class="clamp ${n}" title="click to open">${linkify(t)}</div>` : '';
 const linkify = (t) => esc(t).replace(/https?:\/\/[^\s<]+[^\s<.,;)]/g, (u) => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//, '').slice(0, 50)}</a>`);
+// Markdown from a PR body: our own agents wrote it, rendered whole (tables included), scripts stripped.
+const md = (t) => t ? `<div class="md">${(window.marked ? marked.parse(t) : `<p>${linkify(t)}</p>`).replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<a /g, '<a target="_blank" rel="noopener" ')}</div>` : '';
 const fileHref = (p) => `/employees/file/${btoa(unescape(encodeURIComponent(p))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
+const host = (u) => { try { return new URL(u, location.href).hostname.replace(/^www\./, ''); } catch { return ''; } };
+const favicon = (u) => { const h = host(u); return h && h !== location.hostname ? `<img src="https://www.google.com/s2/favicons?domain=${esc(h)}&sz=64" alt="" loading="lazy">` : '<span class="ic">▤</span>'; };
+// ---------- dates ----------
+const DAY = 864e5;
+const fmtD = (iso) => { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? esc(iso) : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); };
+const fmtDT = (iso) => { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? esc(iso) : d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); };
+const rel = (iso) => { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return ''; const h = (Date.now() - d) / 36e5; const a = Math.abs(h); const s = a < 1 ? `${Math.max(1, Math.round(a * 60))} min` : a < 36 ? `${Math.round(a)} h` : `${Math.round(a / 24)} days`; return h >= 0 ? `${s} ago` : `in ${s}`; };
+const age = (iso) => { if (!iso) return ''; const d = (Date.now() - new Date(iso)) / DAY; return d < 1 ? 'today' : d < 2 ? '1 day' : `${Math.floor(d)} days`; };
+// The deadline, with how far it is: "by Mon 13 Oct, tomorrow" in red when within 2 days.
+const due = (byDate, by, why) => { if (!byDate && !by) return ''; const d = byDate ? new Date(`${byDate}T23:59:00`) : null; const days = d ? Math.ceil((d - Date.now()) / DAY) : null; const far = days == null ? '' : days < 0 ? `${-days} days late` : days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`; return `<span class="due ${days != null && days > 2 ? 'far' : ''}" title="${esc(why || '')}">decide by ${esc(d ? d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : by)}${far ? `, ${far}` : ''}${why ? ' ⓘ' : ''}</span>`; };
+// Every screen opens with its dates: opened, last moved, done, deadline. Absolute and relative.
+const whenRow = (it, extra = []) => { const parts = []; if (it.created) parts.push(`<span>opened <b>${fmtD(it.created)}</b> · ${rel(it.created)}</span>`); if (it.updated && it.updated !== it.created && (!it.created || Math.abs(new Date(it.updated) - new Date(it.created)) > 6e4)) parts.push(`<span>last moved <b>${fmtDT(it.updated)}</b> · ${rel(it.updated)}</span>`); if (it.done) parts.push(`<span class="ok">done <b>${fmtDT(it.done)}</b> · ${rel(it.done)}</span>`); const dd = due(it.byDate, it.by, it.byWhy); if (dd) parts.push(dd); parts.push(...extra.filter(Boolean)); return parts.length ? `<div class="when">${parts.join('')}</div>` : ''; };
 const items = D.items;
 const of = (k) => items.filter((x) => x.kind === k);
-const prs = of('pr'), decs = of('decision'), asks = of('ask'), inis = of('initiative'), evs = of('event'), workers = of('worker'), sheets = of('sheet');
+const prs = of('pr'), decs = of('decision'), asks = of('ask'), inis = of('initiative'), evs = of('event'), workers = of('worker'), sheets = of('sheet'), groups = of('group');
 const byRec = (k) => prs.filter((p) => (p.triage?.recommend || 'unreviewed') === k);
+const cos = (D.people || []).find((p) => p.id === 'cos');
+const prOfUrl = (u) => { const m = String(u || '').match(/github\.com\/[^/]+\/([^/]+)\/pull\/(\d+)/); return m && prs.find((p) => p.repo === m[1] && p.number === Number(m[2])); };
 if (D.standalone) document.body.classList.add('standalone');
 
 // ---------- rail ----------
+// Every group starts closed (Tal, 2026-10-11); what he opens stays open on this browser. The team
+// group header opens the board itself (Tal, 2026-10-12: "team can be one click instead of two") and
+// lists only the workers that need a look.
+const tone = (c) => `var(--${c === 'g' ? 'green' : c === 'a' ? 'amber' : c === 'r' ? 'red' : 'faint'})`;
+const needsLook = (w) => ['failed', 'blocked', 'running'].includes(w.state);
 const GROUPS = [
-  { id: 'today', title: 'Today', sub: 'executive summary', kinds: ['summary'] },
-  { id: 'decide', title: 'Decide', sub: 'only you can', kinds: ['decision', 'ask'], filter: (it) => it.kind === 'decision' || it.type === 'choice' },
-  { id: 'asks', title: 'Asks', sub: 'drafts, retries, proposals', kinds: ['ask'], filter: (it) => it.type !== 'choice' },
-  { id: 'prs', title: 'Pull requests', sub: 'live from GitHub', kinds: ['pr'], by: (it) => it.triage?.recommend || 'unreviewed', order: Object.keys(REC), label: (k) => REC[k] },
-  { id: 'inits', title: 'Initiatives', sub: 'the why, with its number', kinds: ['initiative'] },
-  { id: 'team', title: 'Team', sub: 'every worker', kinds: ['worker'], by: (it) => it.team, order: Object.keys(TEAM), label: (k) => [TEAM[k] || k, ''], closed: true },
-  { id: 'sheets', title: 'Ledgers', sub: 'our own work, row by row', kinds: ['sheet'] },
-  { id: 'log', title: 'Went live', sub: 'last 3 days', kinds: ['event'], closed: true },
+  { id: 'decide', title: 'Decide', kinds: ['decision', 'ask'], filter: (it) => it.kind === 'decision' || it.type === 'choice', mini: (rs) => rs.some((r) => r.byDate) ? `<b><i class="dot red"></i>${rs.filter((r) => r.byDate).length} dated</b>` : '' },
+  { id: 'asks', title: 'Asks', kinds: ['ask'], filter: (it) => it.type !== 'choice', mini: (rs) => `${rs.filter((r) => r.type === 'draft').length} drafts` },
+  { id: 'prs', title: 'Pull requests', kinds: ['pr'], by: (it) => it.triage?.recommend || 'unreviewed', order: Object.keys(REC), label: (k) => REC[k], mini: (rs) => ['g', 'a', 'r'].map((c) => { const n = rs.filter((r) => (REC[r.triage?.recommend || 'unreviewed'] || [])[1] === c).length; return n ? `<b><i class="dot" style="background:${tone(c)}"></i>${n}</b>` : ''; }).join('') },
+  { id: 'inits', title: 'Initiatives', kinds: ['initiative'], mini: (rs) => ['red', 'amber', 'green'].map((h) => { const n = rs.filter((r) => r.health === h).length; return n ? `<b><i class="dot ${h}"></i>${n}</b>` : ''; }).join('') },
+  { id: 'team', title: 'Team', go: 'team', kinds: ['group', 'worker'], filter: (it) => it.kind === 'group' || needsLook(it) || filter !== 'all', count: () => workers.length, mini: () => { const f = workers.filter((w) => w.state === 'failed').length, b = workers.filter((w) => w.state === 'blocked').length, r = workers.filter((w) => w.ranToday).length; return `${f ? `<b><i class="dot red"></i>${f}</b>` : ''}${b ? `<b><i class="dot amber"></i>${b}</b>` : ''}<b><i class="dot green"></i>${r}</b>`; } },
+  { id: 'sheets', title: 'Ledgers', kinds: ['sheet'], mini: (rs) => `${rs.reduce((a, s) => a + s.counts.blocked, 0)} blocked` },
+  { id: 'log', title: 'Went live', kinds: ['event'], mini: () => 'last 3 days' },
 ];
-let filter = 'all', sel = null, open = new Set(GROUPS.filter((g) => !g.closed).map((g) => g.id));
+let filter = 'all', sel = null, open = new Set();
+try { open = new Set(JSON.parse(localStorage.getItem('panel-open') || '[]')); } catch {}
 const visible = () => items.filter((it) => filter === 'all' || (filter === 'new' && isNew(it)) || (filter === 'me' && it.needsYou));
-function rowHTML(it) {
-  const badge = { summary: () => `<span class="pill">${decs.length + asks.length} for you</span>`, pr: () => `<span class="pill solid ${CRIT[it.critical] || 'grey'}">${esc(it.critical || '?')}</span>`, decision: () => `<span class="pill red">${esc(it.by ? 'by ' + it.by : 'open')}</span>`, ask: () => `<span class="pill ${it.type === 'choice' ? 'red' : it.type === 'retry' ? 'amber' : ''}">${esc(it.by ? 'by ' + it.by : it.type)}</span>`, initiative: () => `<span class="pill ${it.health}">${esc(it.num)}/${esc(it.target)}</span>`, worker: () => `<span class="pill ${WTONE[it.state]}">${esc(it.stateLabel)}</span>`, sheet: () => `<span class="pill">${it.total}</span>`, event: () => `<span class="pill">${esc(it.when)}</span>` }[it.kind]();
-  const sub = { pr: () => `${esc(it.repoShort)}#${it.number} · ${esc(it.who)} · ${age(it.updated)} · +${it.additions}/−${it.deletions}`, initiative: () => esc(it.measure), worker: () => esc(it.ranToday ? it.headline : it.job).slice(0, 140), sheet: () => `${it.counts.live} live · ${it.counts.waiting} waiting · ${it.counts.blocked} blocked · ${it.counts.todo} to do`, ask: () => esc(it.who) }[it.kind]?.() ?? esc(it.sub || '');
+const scoreTxt = (s) => s ? `${s.done}/${s.total}` : '';
+function rowHTML(it, lead = false) {
+  const badge = { summary: () => `<span class="pill">${decs.length + asks.length} for you</span>`, pr: () => `<span class="pill solid ${CRIT[it.critical] || 'grey'}">${esc(it.critical || '?')}</span>`, decision: () => `<span class="pill red">${esc(it.byDate ? 'by ' + fmtD(it.byDate) : 'open')}</span>`, ask: () => `<span class="pill ${it.type === 'choice' ? 'red' : it.type === 'retry' ? 'amber' : ''}">${esc(it.byDate ? 'by ' + fmtD(it.byDate) : it.type)}</span>`, initiative: () => `<span class="pill ${it.health}">${esc(it.num)}/${esc(it.target)}</span>`, group: () => `<span class="pill">${it.workers.length}</span>`, worker: () => `<span class="pill ${WTONE[it.state]}">${esc(it.score && it.state === 'ran' ? scoreTxt(it.score) : it.stateLabel)}</span>`, sheet: () => `<span class="pill">${it.total}</span>`, event: () => `<span class="pill">${esc(it.when)}</span>` }[it.kind]();
+  const sub = { summary: () => `${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`, pr: () => `${esc(it.repoShort)}#${it.number} · opened ${fmtD(it.created)} · pushed ${rel(it.updated)} · +${it.additions}/−${it.deletions}`, decision: () => `opened ${fmtD(it.created)} · ${esc(it.tier || '')}`, initiative: () => esc(it.measure), group: () => { const ws = workers.filter((w) => it.workers.includes(w.id)); const r = ws.filter((w) => w.ranToday).length; return `${r ? `${r} ran today` : `last ran ${fmtD(it.updated)}`} · ${ws.filter((w) => w.state === 'blocked').length} waiting`; }, worker: () => `${it.updated ? fmtDT(it.updated) + ' · ' : ''}${esc(it.blocker || (it.ranToday ? it.headline : it.job)).slice(0, 120)}`, sheet: () => `${it.counts.live} live · ${it.counts.waiting} waiting · ${it.counts.blocked} blocked · ${it.counts.todo} to do`, ask: () => `${esc(it.who)} · opened ${fmtD(it.created)}` }[it.kind]?.() ?? esc(it.sub || '');
   const dot = it.kind === 'worker' ? WTONE[it.state] : owner(it);
-  return `<div class="row ${sel === it.id ? 'sel' : ''} ${isNew(it) ? 'new' : ''}" data-id="${it.id}"><span class="dot ${dot}"></span><div><div class="t" title="${esc(it.title)}">${esc(it.title)}</div><div class="s">${sub}</div></div><div class="b">${badge}</div></div>`;
+  const title = it.kind === 'group' ? TEAM[it.team] || it.team : it.title;
+  return `<div class="row ${lead ? 'lead' : ''} ${sel === it.id ? 'sel' : ''} ${isNew(it) ? 'new' : ''}" data-id="${it.id}"><span class="dot ${dot}"></span><div><div class="t" title="${esc(title)}">${esc(title)}</div><div class="s">${sub}</div></div><div class="b">${badge}</div></div>`;
 }
 function renderRail() {
   const v = visible();
   let h = `<div class="chips">${[['all', 'All'], ['new', `New since you looked (${items.filter(isNew).length})`], ['me', `Needs me (${items.filter((i) => i.needsYou).length})`]].map(([k, l]) => `<button class="${filter === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>`;
+  h += rowHTML(items[0], true);
   for (const g of GROUPS) {
     const rows = v.filter((it) => g.kinds.includes(it.kind) && (!g.filter || g.filter(it)));
     if (!rows.length && filter !== 'all') continue;
-    h += `<div class="group ${open.has(g.id) ? '' : 'closed'}" data-g="${g.id}"><h2><span class="n">${rows.length}</span> ${g.title}<span class="sub">${g.sub}</span></h2><div class="rows">`;
-    if (g.by) { for (const k of g.order) { const rs = rows.filter((it) => g.by(it) === k); if (!rs.length) continue; const [l, c] = g.label(k); h += `<div class="sub-h">${c ? `<i style="background:var(--${c === 'g' ? 'green' : c === 'a' ? 'amber' : c === 'r' ? 'red' : 'faint'})"></i>` : ''}${esc(l)} · ${rs.length}</div>` + rs.map(rowHTML).join(''); } }
-    else h += rows.map(rowHTML).join('');
+    const isOpen = open.has(g.id) || (filter !== 'all' && rows.length);
+    h += `<div class="group ${isOpen ? '' : 'closed'} ${g.go && sel === g.go ? 'sel' : ''}" data-g="${g.id}" ${g.go ? `data-gogo="${g.go}"` : ''}><h2><span class="n">${g.count ? g.count(rows) : rows.length}</span><span>${g.title}</span><span class="mini">${g.mini ? g.mini(rows) : ''}</span></h2><div class="rows">${g.id === 'prs' ? `<div class="sub-h">${prSortSel()}</div>` : ''}`;
+    if (g.by) { for (const k of g.order) { const rs = rows.filter((it) => g.by(it) === k); if (!rs.length) continue; const [l, c] = g.label(k); h += `<div class="sub-h">${c ? `<i style="background:${tone(c)}"></i>` : ''}${esc(l)} · ${rs.length}</div>` + prSorted(rs).map((r) => rowHTML(r)).join(''); } }
+    else if (g.id === 'team') { h += rows.filter((r) => r.kind === 'group').map((r) => rowHTML(r)).join(''); const ws = rows.filter((r) => r.kind === 'worker'); if (ws.length) h += `<div class="sub-h">${filter === 'all' ? 'need a look' : 'workers'} · ${ws.length}</div>` + ws.map((r) => rowHTML(r)).join(''); }
+    else h += rows.map((r) => rowHTML(r)).join('');
     h += `</div></div>`;
   }
   document.getElementById('rail').innerHTML = h;
@@ -266,9 +403,16 @@ function renderRail() {
 const sec = (t, body) => body ? `<div class="sec"><h3>${t}</h3>${body}</div>` : '';
 const shots = (urls) => urls?.length ? `<div class="shots">${urls.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(u)}" alt=""></a>`).join('')}</div>` : '';
 const sizeOf = (p) => Math.min(1, Math.log10(1 + p.additions + p.deletions) / 4);
+const trio = (parts) => { const ps = parts.filter(([, t]) => t); return ps.length ? `<div class="trio">${ps.map(([h, t, n]) => `<div class="card"><h3>${h}</h3>${clamp(t, n)}</div>`).join('')}</div>` : ''; };
+// Why add, why not: the value and the cost, side by side, each with its number when it has one.
+const sides = (add, not, addH = 'Why add · the value', notH = 'Why not · the cost') => (add || not) ? `<div class="sides"><div class="side"><h3>${addH}</h3>${clamp(add || 'not said', 'six')}</div><div class="side no"><h3>${notH}</h3>${clamp(not || 'not said', 'six')}</div></div>` : '';
+// The path to live: "Tal: merge" becomes a step with who does it; Tal's steps are blue.
+const steps = (list) => list?.length ? `<div class="steps">${list.map((s, i) => { const [who, ...rest] = s.split(/:\s*/); const what = rest.join(': ') || who; const w = rest.length ? who : ''; return `${i ? '<span class="arr">→</span>' : ''}<span class="step">${w ? `<b class="${/tal|you/i.test(w) ? 'you' : /done|merged|live/i.test(w) ? 'done' : ''}">${esc(w)}</b>` : ''}${esc(what)}</span>`; }).join('')}</div>` : '';
+// Explainer pages inline: each a closed frame that opens on click, with the link beside it.
+const frames = (list) => list?.length ? `<div class="frames">${list.map((x) => `<details class="frame"><summary>${esc(x.label || host(x.url) || 'page')}<a href="${esc(x.url)}" target="_blank" rel="noopener" class="cap">open ↗</a></summary><iframe loading="lazy" src="${esc(x.url)}" title="${esc(x.label || '')}"></iframe></details>`).join('')}</div>` : '';
 function boardHTML() {
-  return `<div class="board">${Object.entries(REC).map(([k, [l, c]]) => { const rs = byRec(k); if (!rs.length) return ''; return `<div class="col ${c}"><h4><b>${rs.length}</b>${esc(l)}</h4>${rs.map((p) => `<a class="blk ${p.critical}" data-go="${p.id}" title="${esc(p.title)}"><span class="n">${esc(p.repoShort)}#${p.number}</span><span class="tt">${esc(p.title)}</span><span class="sz"><i style="width:${Math.round(sizeOf(p) * 100)}%"></i></span></a>`).join('')}</div>`; }).join('')}</div>
-  <div class="lg"><span><i style="background:var(--red)"></i>High</span><span><i style="background:var(--amber)"></i>Med</span><span><i style="background:var(--green)"></i>Low: how critical, from the review</span><span>bar: size of the change</span></div>`;
+  return `<div class="board">${Object.entries(REC).map(([k, [l, c]]) => { const rs = byRec(k); if (!rs.length) return ''; return `<div class="col ${c}"><h4><b>${rs.length}</b>${esc(l)}</h4>${prSorted(rs).map((p) => `<a class="blk ${p.critical}" data-go="${p.id}" title="${esc(p.title)} · opened ${fmtD(p.created)}"><span class="n">${esc(p.repoShort)}#${p.number}</span><span class="d">${fmtD(p.created)}</span><span class="tt">${esc(p.title)}</span><span class="sz"><i style="width:${Math.round(sizeOf(p) * 100)}%"></i></span></a>`).join('')}</div>`; }).join('')}</div>
+  <div class="lg"><span><i style="background:var(--red)"></i>High</span><span><i style="background:var(--amber)"></i>Med</span><span><i style="background:var(--green)"></i>Low: how critical, from the review</span><span>bar: size of the change · date: opened</span></div>`;
 }
 function mapHTML(it) {
   const total = it.map.reduce((a, m) => a + m.lines, 0) || 1;
@@ -278,51 +422,75 @@ function mapHTML(it) {
   <div class="reach">${REACH.map(([l, as]) => { const on = l === 'Only us' ? !REACH.slice(0, -1).some(([, bs]) => bs.some((a) => areas.has(a))) : as.some((a) => areas.has(a)); return `<div class="${on ? 'on' : ''} ${on && l === 'Money' ? 'red' : ''}"><b>${on ? '●' : '○'}</b>${l}</div>`; }).join('')}</div>`;
 }
 const weekHTML = (w) => `<span class="week">${w.map((d, i) => d.runs.length ? d.runs.map((r) => `<i class="${r} ${i === 6 ? 'today' : ''}" title="${d.d} ${r}"></i>`).join('') : `<i class="${i === 6 ? 'today' : ''}" title="${d.d}"></i>`).join('')}</span>`;
+const scoreHTML = (s, big = false) => s ? `<span class="score ${s.done < s.total ? 'part' : ''}" title="${s.done} of ${s.total} done">${big ? `<b>${s.done}/${s.total}</b> done` : `${s.done}/${s.total}`}<i><b style="width:${Math.round((s.done / s.total) * 100)}%"></b></i></span>` : '';
+const sortW = (ws) => [...ws].sort((a, b) => WORDER.indexOf(a.state) - WORDER.indexOf(b.state) || a.title.localeCompare(b.title));
+const byTeam = () => Object.keys(TEAM).map((t) => [t, sortW(workers.filter((w) => w.team === t))]).filter(([, ws]) => ws.length);
+const wchip = (w) => `<span class="wchip ${w.state}" data-go="${w.id}" title="${esc(w.blocker || w.headline || w.job)}${w.updated ? ` · ${fmtDT(w.updated)}` : ''}"><i class="dot ${WTONE[w.state]}"></i><span>${esc(w.title)}</span>${w.score ? `<small>${scoreTxt(w.score)}</small>` : ''}</span>`;
+const teamStrip = () => `<div class="team">${byTeam().map(([t, ws]) => `<div class="tm"><h4 data-go="t-${t}" title="open the team">${esc(TEAM[t])} ↗</h4><div class="chipset">${ws.map(wchip).join('')}</div></div>`).join('')}</div>`;
+const tile = (d, cls = '', why = '') => `<a class="tile ${cls}" ${d.url ? `href="${esc(d.url)}" target="_blank" rel="noopener"` : ''}>${d.url ? favicon(d.url) : `<span class="ic">${cls === 'ask' ? '!' : '✓'}</span>`}<div><div class="host">${d.url ? `${esc(host(d.url))} ↗` : ''}</div>${d.on ? `<span class="cap">${fmtD(d.on)}${d.by ? ` · ${esc(d.by)}` : ''}</span>` : ''}<div class="tx clamp" title="${esc(d.text)}">${esc(d.text)}</div>${why ? `<div class="ask-why">${esc(why)}</div>` : ''}</div></a>`;
 
 // ---------- screens ----------
 const ACTS = { 'merge and deploy': ['Merge and deploy', 'go'], 'merge, deploy later with others': ['Merge, deploy in the next batch', 'go'], 'needs your eyes': ['Open the diff', 'go'], 'send back': ['Send back with a note', 'danger'], split: ['Ask for a split', 'danger'], close: ['Close it', 'danger'], unreviewed: ['Open on GitHub', ''] };
+// A PR: decide first; then why add and why not with the path to live; then the author's own Why and
+// What, whole; then what it touches, risk, verified, explainer pages, files, history.
 function prHTML(it) {
   const t = it.triage || {};
+  const s = it.sections || {};
   const [label, cls] = ACTS[t.recommend] || ACTS.unreviewed;
   const link = t.recommend === 'needs your eyes' ? `${it.url}/files` : it.url;
-  const grouped = new Map(); for (const s of it.stats || []) (grouped.get(s.area) ?? grouped.set(s.area, []).get(s.area)).push(s);
-  const files = [...grouped].sort((x, y) => y[1].length - x[1].length).map(([a, fs]) => `<details ${fs.length <= 8 ? 'open' : ''}><summary><i style="background:${AREA(a)}"></i>${esc(a)} · ${fs.length} file${fs.length > 1 ? 's' : ''}</summary>${fs.map((f) => `<div title="${esc(f.path)}">${esc(f.path)} <small>+${f.a} −${f.d}</small></div>`).join('')}</details>`).join('');
+  const grouped = new Map(); for (const f of it.stats || []) (grouped.get(f.area) ?? grouped.set(f.area, []).get(f.area)).push(f);
+  const files = [...grouped].sort((x, y) => y[1].length - x[1].length).map(([a, fs]) => `<details><summary><i style="background:${AREA(a)}"></i>${esc(a)} · ${fs.length} file${fs.length > 1 ? 's' : ''}</summary>${fs.map((f) => `<div title="${esc(f.path)}">${esc(f.path)} <small>+${f.a} −${f.d}</small></div>`).join('')}</details>`).join('');
+  const toShip = t.to_ship?.length ? t.to_ship : t.recommend ? [t.recommend === 'needs your eyes' ? 'Tal: read the diff' : t.recommend === 'merge and deploy' ? 'Tal: merge' : t.recommend === 'merge, deploy later with others' ? 'Tal: merge with the next batch' : `author: ${t.recommend}`, ...(it.repoShort === 'site' && /merge/.test(t.recommend) ? ['Tal: deploy the site'] : [])] : [];
+  const ini = inis.find((i) => i.id === `i-${it.initiative}`);
+  const w = workers.find((x) => x.employee === it.employee);
   return `
-  ${D.standalone ? `<div class="cardhead"><b>Shapeless Employees · review card</b> · built ${esc(D.builtAt)} · <a href="http://127.0.0.1:4600/employees#${it.id}">open in the panel</a> · <a href="${esc(it.url)}">the PR</a></div>` : ''}
+  ${D.standalone ? `<div class="cardhead"><b>ShapelessAI Employees · review card</b> · built ${esc(D.builtAt)} · <a href="http://127.0.0.1:4600/employees#${it.id}">open in the panel</a> · <a href="${esc(it.url)}">the PR</a></div>` : ''}
   <h1>${esc(it.title)}</h1>
   <div class="hdr">
     <span class="pill solid ${CRIT[it.critical] || 'grey'}">${esc(it.critical)} · ${esc(it.criticalWhy)}</span>
     <span class="pill ${RISK[t.risk] || 'grey'}">risk ${esc(t.risk || '?')}</span>
     <span class="pill">${t.user_visible ? 'users see it' : 'internal'}</span>
     <span class="pill">+${it.additions} −${it.deletions} · ${it.changedFiles} files</span>
-    <span class="pill">${it.isDraft ? 'draft' : 'ready'} · ${age(it.created)} old</span>
-    <span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span>
+    <span class="pill">${it.isDraft ? 'draft' : 'ready'}</span>
+    <span class="pill"><span class="dot ${owner(it)}"></span>${w ? `<a href="#" data-go="${w.id}">${esc(it.who)}</a>` : esc(it.who)}</span>
+    ${ini ? `<a class="pill ${ini.health}" href="#" data-go="${ini.id}">${esc(ini.title.split(':')[0])} ↗</a>` : ''}
     ${it.employee && !it.labelled ? '<span class="pill amber">no employee label</span>' : ''}
     ${t.stale ? '<span class="pill amber">review is of an older push</span>' : ''}
-    ${it.session ? copyBtn(it.session, it.sessionLabel) : '<span class="pill">no session line in the body</span>'}
+    ${it.session ? talkBtn(it.session, 'Talk to its author', 'btn sm') : ''}
     <a class="pill blue" href="${esc(it.url)}" target="_blank">GitHub ↗</a>
+    ${it.card ? `<a class="pill blue" href="${esc(it.card)}" target="_blank" title="the same screen as one page, attached on the PR">review card ↗</a>` : ''}
   </div>
+  ${whenRow(it, [t.at ? `<span>reviewed <b>${fmtDT(t.at)}</b> · ${esc((t.by || 'opus').replace(/ \(.*\)$/, '').replace(/,.*$/, ''))}</span>` : '<span class="due">not reviewed at this commit</span>'])}
   <div class="card"><div class="rec"><a class="btn ${cls}" href="${esc(link)}" target="_blank"><kbd>1</kbd> ${label}</a><span class="pill">${t.minutes ? `about ${t.minutes} min` : ''}</span></div>
     <div class="why">${esc(t.recommend_why || 'Not yet reviewed at this commit: node tools/employees/panel.mjs review ' + it.repoShort + '#' + it.number)}</div>
     ${D.standalone ? '' : `<div class="alts">${Object.entries(ACTS).filter(([k]) => k !== t.recommend && k !== 'unreviewed').map(([k, [l]]) => `<span class="btn sm">${esc(l)}</span>`).join('')}</div>`}</div>
-  <div class="card"><h3>What it touches, and who feels it</h3>${mapHTML(it)}</div>
+  ${sides(t.why_add || t.what, t.why_not || t.risk_why)}
+  ${toShip.length ? sec('To ship it', steps(toShip)) : ''}
+  ${s.why || s.what ? `<div class="vis"><div>${sec('Why, in the author\'s words', s.why ? md(s.why) : '<p style="color:var(--mute)">The body has no Why section.</p>')}</div><div>${sec('What changes, in the author\'s words', s.what ? md(s.what) : '<p style="color:var(--mute)">The body has no What section.</p>')}</div></div>` : sec('The body', `<p style="color:var(--mute)">No Why or What section in the PR body${t.why ? `. The reviewer read it as: ${esc(t.why)}` : ''}.</p>`)}
+  <div class="card"><h3>What it touches, and who feels it</h3>${mapHTML(it)}${t.impact ? `<p style="margin:10px 0 0;font-size:13px;color:var(--mute)">${esc(t.impact)}</p>` : ''}</div>
   <div class="vis"><div>
-  ${sec('What you get', esc(t.what || it.sections?.what || ''))}
-  ${sec('Why it was opened', esc(t.why || it.sections?.why || ''))}
-  ${sec('Impact after deploy', esc(t.impact || ''))}
-  ${sec('Risk and tradeoffs', `<dl class="kv"><dt>Level</dt><dd><span class="pill ${RISK[t.risk] || 'grey'}">${esc(t.risk || '?')}</span> ${esc(t.risk_why || '')}</dd><dt>Safe to merge</dt><dd>${t.recommend ? `<b>${esc(t.recommend)}</b>: ${esc(t.recommend_why)}` : 'not reviewed'}</dd><dt>Touches</dt><dd>${(t.touches || []).map((x) => `<span class="pill">${esc(x)}</span>`).join(' ')}</dd>${t.gaps?.length ? `<dt>Before it is safe</dt><dd><ul class="gaps" style="margin:0;padding-left:18px">${t.gaps.map((g) => `<li>${esc(g)}</li>`).join('')}</ul></dd>` : ''}${t.overlaps?.length ? `<dt>Overlaps</dt><dd>${t.overlaps.map((n) => `<a href="#" data-go="pr-${it.repoShort}-${n}">#${n}</a>`).join(', ')} touch the same files; merge in order</dd>` : ''}</dl>`)}
-  ${sec('Verified', `<p>${esc(t.verified || it.sections?.verified || 'claims only')}</p>${it.gate ? `<p class="pill ${it.gate.ok ? 'green' : 'red'}">merge gate: ${it.gate.ok ? 'green' : 'red'}</p>${it.gate.ok ? '' : `<p style="color:var(--mute);font:12px ui-monospace,Menlo,monospace">${esc(it.gate.log)}</p>`}` : '<p class="pill">merge gate: not run on this PR</p>'}${shots(it.images)}`)}
+  ${sec('Risk', `<dl class="kv"><dt>Level</dt><dd><span class="pill ${RISK[t.risk] || 'grey'}">${esc(t.risk || '?')}</span> ${esc(t.risk_why || '')}</dd><dt>Touches</dt><dd>${(t.touches || []).map((x) => `<span class="pill">${esc(x)}</span>`).join(' ')}</dd>${t.gaps?.length ? `<dt>Before it is safe</dt><dd><ul class="gaps" style="margin:0;padding-left:18px">${t.gaps.map((g) => `<li>${esc(g)}</li>`).join('')}</ul></dd>` : ''}${t.overlaps?.length ? `<dt>Overlaps</dt><dd>${t.overlaps.map((n) => `<a href="#" data-go="pr-${it.repoShort}-${n}">#${n}</a>`).join(', ')} touch the same files; merge in order</dd>` : ''}</dl>`)}
+  ${sec('Verified', `${s.verified ? md(s.verified) : clamp(t.verified || 'claims only')}${it.gate ? `<p class="pill ${it.gate.ok ? 'green' : 'red'}">merge gate: ${it.gate.ok ? 'green' : 'red'}</p>${it.gate.ok ? '' : `<p style="color:var(--mute);font:12px ui-monospace,Menlo,monospace">${esc(it.gate.log)}</p>`}` : '<p class="pill">merge gate: not run on this PR</p>'}${shots(it.images)}`)}
+  ${s.gaps ? sec('Not in this PR, said by the author', md(s.gaps)) : ''}
   </div><div>
   ${sec('Files, by area', `<div class="files">${files}</div>`)}
-  ${sec('History', `<ul class="hist"><li><span>${esc(it.created.slice(0, 10))}</span><b>opened</b> by ${esc(it.who)}${it.employeeRun ? ` (run ${esc(it.employeeRun)})` : ''}</li><li><span>${esc(it.updated.slice(0, 10))}</span><b>last push</b></li>${t.at ? `<li><span>${esc(t.at.slice(0, 10))}</span><b>reviewed</b> by ${esc(t.by || 'opus')}</li>` : ''}${it.gate ? `<li><span>gate</span><b>${it.gate.ok ? 'green' : 'red'}</b></li>` : ''}</ul>`)}
+  ${sec('History', `<ul class="hist"><li><span>${fmtDT(it.created)}</span><b>opened by ${esc(it.who)}${it.employeeRun ? ` (run ${esc(it.employeeRun)})` : ''}</b></li><li><span>${fmtDT(it.updated)}</span><b>last push</b></li>${t.at ? `<li><span>${fmtDT(t.at)}</span><b>reviewed by ${esc((t.by || 'opus').replace(/ \(.*\)$/, ''))}</b></li>` : ''}${it.gate ? `<li><span>gate</span><b>${it.gate.ok ? 'green' : 'red'}</b></li>` : ''}</ul>`)}
   </div></div>
-  ${D.standalone ? '' : sec('Note to the author', `<textarea placeholder="One line. It lands as a comment on the PR${it.employee ? ` and as a rule in ${esc(it.employee)}'s playbook` : ''}."></textarea><div style="margin-top:6px"><button class="btn" data-act="panel-note-${esc(it.repoShort)}-${it.number}">Send</button></div>`)}`;
+  ${it.explainers?.length ? sec(`Explainer pages linked from the PR · ${it.explainers.length}`, frames(it.explainers.map((u) => ({ url: u, label: u.split('/').pop().replace(/\.html?$/, '').replace(/[-_]/g, ' ') })))) : ''}
+  ${D.standalone ? '' : sec('Note to the author', `<div class="talk"><input class="in" data-tell placeholder="One line. Lands as a comment on the PR${it.employee ? ` and as a rule in ${esc(it.employee)}'s playbook` : ''}."><button class="btn" data-act="panel-note-${esc(it.repoShort)}-${it.number}">Send</button></div>`)}`;
 }
-const optsHTML = (it, big = true) => it.options.map((o, i) => o.url ? `<a href="${esc(o.url)}" target="_blank" class="btn ${big ? '' : 'sm'} ${i === 0 && big ? 'go' : ''}">${big ? `<kbd>${i + 1}</kbd> ` : ''}${esc(o.label)}</a>` : `<button class="btn ${big ? '' : 'sm'} ${i === 0 && big ? 'go' : ''}" data-act="panel-decide-${esc(it.id)}" data-value="${esc(o.label)}">${big ? `<kbd>${i + 1}</kbd> ` : ''}${esc(o.label)}</button>`).join('');
+// Options as cards: the button, then for and against (Tal, 2026-10-12: "why add, why not add").
+const optCards = (it, opts, btn) => `<div class="opts2">${opts.map((o, i) => `<div class="opt ${i === 0 ? 'first' : ''}"><div>${btn(o, i)}</div>${o.for || o.against || o.means ? `<div class="fa">${o.for ? `<b class="p">+</b><span>${esc(o.for)}</span>` : ''}${o.against ? `<b class="m">−</b><span>${esc(o.against)}</span>` : ''}${o.means && !o.for ? `<b>=</b><span>${esc(o.means)}</span>` : ''}</div>` : ''}</div>`).join('')}</div>`;
+const optBtn = (it, big = true) => (o, i) => o.url ? `<a href="${esc(o.url)}" target="_blank" class="btn ${big ? '' : 'sm'} ${i === 0 && big ? 'go' : ''}">${big ? `<kbd>${i + 1}</kbd> ` : ''}${esc(o.label)}</a>` : `<button class="btn ${big ? '' : 'sm'} ${i === 0 && big ? 'go' : ''}" data-act="panel-decide-${esc(it.id)}" data-value="${esc(o.label)}">${big ? `<kbd>${i + 1}</kbd> ` : ''}${esc(o.label)}</button>`;
+const optsHTML = (it, big = true) => it.options.map(optBtn(it, big)).join('');
+const related = (links) => (links || []).map((l) => { const p = prOfUrl(l.url); return p ? `<a href="#" data-go="${p.id}" class="pill blue">${esc(l.label)} · in the panel</a>` : `<a class="pill" href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a>`; }).join(' ');
 function decisionHTML(it) {
-  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill red">${esc(it.by ? 'decide by ' + it.by : 'no deadline')}</span><span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span><span class="pill">${esc(it.tier || 'decide before')}</span></div>
-  <div class="card"><div class="rec">${optsHTML(it)}</div><div class="why">Default if you say nothing: ${esc(it.default)}. Your answer is recorded and the owner worker reads it on its next run.</div></div>
-  ${sec('Why this is yours', esc(it.why))}${sec('What happened', esc(it.what))}${sec('Risk either way', esc(it.risk))}${sec('Proof', (it.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a>`).join(' · ') + shots(it.images))}`;
+  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span><span class="pill">${esc(it.tier || 'decide before')}</span></div>
+  ${whenRow(it)}
+  ${optCards(it, it.options, optBtn(it))}
+  <div class="card"><div class="why">If you say nothing${it.byDate ? ` by ${fmtD(it.byDate)}` : ''}: <b>${esc(it.default)}</b>. Your answer is recorded with the date and the owner worker reads it on its next run.${it.byWhy ? `<br>Why that date: ${esc(it.byWhy)}` : ''}</div></div>
+  ${trio([['What this is', it.what], ['Why only you can decide it', it.why], ['Tradeoffs', it.risk]])}
+  ${sec('Evidence', related(it.links) + shots(it.images))}`;
 }
 // An ask's buttons: options post their index, fixes post theirs; an input fix sends its value.
 const askBtns = (it, big = true) => it.options.length
@@ -330,69 +498,140 @@ const askBtns = (it, big = true) => it.options.length
   : `${it.url ? `<a class="btn ${big ? 'go' : 'sm go'}" href="${esc(it.url)}" target="_blank">${big ? '<kbd>1</kbd> ' : ''}${esc(it.type === 'draft' ? 'Open the draft' : it.type === 'calendar' ? 'Open the event' : 'Open it')}</a>` : ''}${it.fixes.filter((f) => big || !f.quiet).map((f) => f.input ? `<span style="display:inline-flex;gap:6px"><input class="in" style="width:140px" placeholder="${esc(f.input.placeholder)}" data-input="${esc(it.id)}-${f.n}"><button class="btn ${big ? '' : 'sm'}" data-fix="${esc(it.id)}" data-n="${f.n}" data-from="${esc(it.id)}-${f.n}">${esc(f.label)}</button></span>` : `<button class="btn ${big ? '' : 'sm'}" data-fix="${esc(it.id)}" data-n="${f.n}">${esc(f.label)}</button>`).join('')}`;
 function askHTML(it) {
   const w = workers.find((x) => x.employee === it.employee);
-  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span><span class="pill ${it.type === 'choice' ? 'red' : ''}">${esc(it.proposal ? 'proposal' : it.type)}</span>${it.by ? `<span class="pill red">by ${esc(it.by)}</span>` : ''}${it.pending ? `<span class="pill amber">in progress since ${esc(it.pending)}</span>` : ''}${w ? `<a class="pill" href="#" data-go="${w.id}">${esc(w.title)} ↗</a>` : ''}</div>
-  <div class="card"><div class="rec">${askBtns(it)}</div>${it.options.length ? `<div class="why">${it.options.map((o) => `<b>${esc(o.label)}</b>: ${esc(o.means)}`).join(' · ')}</div>` : ''}${it.default ? `<div class="why">If you say nothing${it.by ? ` by ${esc(it.by)}` : ''}: ${esc(it.default)}</div>` : ''}${it.recommend ? `<div class="why">${linkify(it.recommend)}</div>` : ''}</div>
-  ${sec('What', linkify(it.what))}${sec('Why', linkify(it.why))}`;
+  const fa = /^For: ([\s\S]*?)\.? Against: ([\s\S]*)$/.exec(it.why || '');
+  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill"><span class="dot ${owner(it)}"></span>${w ? `<a href="#" data-go="${w.id}">${esc(it.who)}</a>` : esc(it.who)}</span><span class="pill ${it.type === 'choice' ? 'red' : ''}">${esc(it.proposal ? 'proposal' : it.type)}</span>${it.pending ? `<span class="pill amber">in progress since ${fmtDT(it.pending)}</span>` : ''}</div>
+  ${whenRow(it)}
+  ${it.options.length ? optCards(it, it.options, (o, i) => `<button class="btn ${i === 0 ? 'go' : ''}" data-fix="${esc(it.id)}" data-n="${o.n}"><kbd>${i + 1}</kbd> ${esc(o.label)}</button>`) : `<div class="card"><div class="rec">${askBtns(it)}</div>${it.recommend ? `<div class="why">${linkify(it.recommend)}</div>` : ''}</div>`}
+  ${it.options.length && it.recommend ? `<div class="card"><div class="why">${linkify(it.recommend)}</div></div>` : ''}
+  ${it.default ? `<div class="card"><div class="why">If you say nothing${it.byDate ? ` by ${fmtD(it.byDate)}` : ''}: <b>${esc(it.default)}</b></div></div>` : ''}
+  ${fa ? sides(fa[1], fa[2]) : ''}
+  ${trio([['What this is', it.what], [fa ? 'Where it stands' : 'Why it is asked', fa ? '' : it.why]])}`;
 }
 function initiativeHTML(it) {
   const tone = it.health === 'red' ? 'red' : it.health === 'amber' ? 'amber' : 'cos';
-  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill ${it.health}">${it.health === 'red' ? 'off track' : it.health === 'amber' ? 'at risk' : 'on track'}</span><span class="pill">owner ${esc(it.ownerLabel)}</span>${it.cost ? `<span class="pill">${esc(it.cost)}</span>` : ''}${it.readAt ? `<span class="pill green">read ${esc(age(it.readAt))}</span>` : ''}</div>
+  const myPRs = prs.filter((p) => `i-${p.initiative}` === it.id);
+  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill ${it.health}">${it.health === 'red' ? 'off track' : it.health === 'amber' ? 'at risk' : 'on track'}</span><span class="pill">owner ${esc(it.ownerLabel)}</span>${it.cost ? `<span class="pill">${esc(it.cost)}</span>` : ''}</div>
+  ${whenRow({ updated: it.updated }, [it.readAt ? `<span class="ok">read <b>${fmtDT(it.readAt)}</b> · ${rel(it.readAt)}</span>` : ''])}
   <div class="card"><div style="display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap"><div><div class="num">${esc(it.num)}</div><div style="color:var(--mute);font-size:12.5px;margin-top:4px">${esc(it.unit)} · target ${esc(it.target)}</div></div>${spark(it.series, 180, 40, `var(--${tone})`)}<div style="color:var(--mute);font-size:12.5px">${esc(it.trend)}</div></div><div class="bar"><b class="${it.health === 'green' ? '' : it.health}" style="width:${Math.min(100, Math.round((it.num / it.target) * 100))}%"></b></div></div>
-  ${sec('Why', esc(it.why))}${sec('Measured by', `<p>${esc(it.measure)}</p>${it.blind ? `<p class="pill red">${esc(it.blind)}</p>` : ''}${it.proofs?.length ? `<p>${it.proofs.map((p) => `<a href="${esc(p.url)}" target="_blank">${esc(p.label)} ↗</a>`).join(' · ')}</p>` : ''}`)}${sec('What we believe and will check', esc(it.belief))}
-  ${sec('Open under it', `<ul class="hist">${(it.open || []).map((o) => `<li><span>${esc(o.when)}</span><b>${o.id ? `<a href="#" data-go="${esc(o.id)}">${esc(o.what)}</a>` : esc(o.what)}</b></li>`).join('')}</ul>`)}
+  ${trio([['Why', it.why], ['Measured by', `${it.measure}${it.blind ? `\n${it.blind}` : ''}`], ['What we believe and will check', it.belief]])}
+  ${it.proofs?.length ? sec('Proof', it.proofs.map((p) => `<a href="${esc(p.url)}" target="_blank">${esc(p.label)} ↗</a>`).join(' · ')) : ''}
+  ${sec('Open under it', `<ul class="hist">${(it.open || []).map((o) => `<li><span>${esc(o.when)}</span><b>${o.id && items.some((x) => x.id === o.id) ? `<a href="#" data-go="${esc(o.id)}">${esc(o.what)}</a>` : esc(o.what)}</b></li>`).join('')}</ul>`)}
+  ${myPRs.length ? sec(`Its open PRs · ${myPRs.length}`, `<ul class="hist">${myPRs.map((p) => `<li><span>${fmtD(p.created)}</span><b><a href="#" data-go="${p.id}">${esc(p.repoShort)}#${p.number} ${esc(p.title)}</a></b></li>`).join('')}</ul>`) : ''}
   ${sec('Evidence', (it.links || []).map((l) => { const m = l.url.match(/\/employees\/sheets\/([a-z-]+)/) || l.url.match(/shapeless-research\/blob\/master\/data\/([a-z_]+)\.csv/); const s = m && sheets.find((x) => x.id === `sheet-${m[1]}` || x.file === `data/${m[1]}.csv`); return s ? `<a href="#" data-go="${s.id}">${esc(l.label)}</a>` : `<a href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a>`; }).join(' · '))}
-  ${sec('Workers on it', (it.workers || []).map((w) => { const x = workers.find((y) => y.employee === w); return x ? `<a class="btn sm" href="#" data-go="${x.id}"><span class="dot ${WTONE[x.state]}"></span>${esc(x.title)}</a>` : copyBtn(w, w); }).join(' '))}`;
+  ${sec('Workers on it', (it.workers || []).map((w) => { const x = workers.find((y) => y.employee === w); return x ? wchip(x) : copyBtn(w, w); }).join(' '))}`;
 }
+// A worker: dates and the count first, what needs you, what it made (dated tiles), its runs (a strip,
+// one run open at a time, each with its count), its explainer pages, then Talk.
 function workerHTML(it) {
   const myAsks = asks.filter((a) => it.asks.includes(a.id));
   const myPRs = it.prs.map((id) => prs.find((p) => p.id === id)).filter(Boolean);
+  const stuck = it.stuck.map((s) => { const [what, rest = ''] = s.split(/: (.*)/s); return tile({ text: what }, 'ask', rest); });
+  const talk = it.talk ? `${talkBtn(it.talk, 'Talk to it in Terminal')} ${copyBtn(it.talk, shortCmd(it.talk))}` : cos ? `${talkBtn(cos.cmd, 'Ask the Chief of Staff about it')} ${copyBtn(cos.cmd, shortCmd(cos.cmd))}` : '';
+  const runs = it.runs.length ? `<div class="runs">${it.runs.map((r, i) => `<span class="run ${i === 0 ? 'sel' : ''}" data-run="${i}" title="${esc(r.at)}"><i class="dot ${r.ok ? 'green' : 'red'}"></i>${esc(r.when)}${r.score ? ` <b>${scoreTxt(r.score)}</b>` : ''}${r.ok ? '' : ' <small>failed</small>'}</span>`).join('')}</div><div class="runtext" id="runtext">${linkify(it.runs[0].text || 'no summary')}</div>` : '<p style="color:var(--mute)">No run in the last seven days.</p>';
+  const g = groups.find((x) => x.team === it.team);
   return `<h1>${esc(it.title)}</h1>
-  <div class="hdr"><span class="pill ${WTONE[it.state]}">${esc(it.stateLabel)}</span>${weekHTML(it.week)}<span class="pill"><span class="dot ${owner(it)}"></span>${esc(TEAM[it.team] || it.team)}</span><span class="pill">${esc(it.runtime)}${it.model ? ` · ${esc(it.model)}` : ''}</span><span class="pill">${esc(it.days)}${it.start ? ` from ${esc(it.start)}` : ''}${it.hours ? ` · ${it.hours}h shift` : ''}</span>${copyBtn(it.employee, it.employee)}${it.jobFile ? `<a class="pill" href="${fileHref(it.jobFile)}" target="_blank">the job in full ↗</a>` : ''}</div>
-  <p style="margin:0 0 14px;font-size:15px">${esc(it.job)}</p>
-  ${it.blocker ? `<div class="blocker ${it.state === 'failed' ? 'red' : ''}"><b>${it.state === 'failed' ? 'Failed' : 'Blocked'}:</b> ${linkify(it.blocker)}${it.did ? `<small>${esc(it.did)}</small>` : ''}</div><br>` : ''}
-  <div class="card"><h3>${it.ranToday ? 'Today' : it.updated ? `Last run, ${esc(age(it.updated))} ago` : 'Today'}</h3>${it.state === 'running' ? '<p style="color:var(--mute)">Working now; the record lands when it finishes.</p>' : it.updated ? `<p style="margin:0 0 10px;font-size:15px">${linkify(it.headline)}</p><ul class="list">${it.done.map((d) => `<li><b>✓</b><span>${d.url ? `<a href="${esc(d.url)}" target="_blank">${esc(d.text)}</a>` : esc(d.text)}</span></li>`).join('')}${it.stuck.map((s) => `<li class="ask"><b>!</b><span>${esc(s)}</span></li>`).join('')}</ul>${it.work.length ? `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--you);font-size:12.5px">everything it did · ${it.work.length}</summary><ul class="list" style="margin-top:8px">${it.work.map((w) => `<li class="${w.ok ? '' : w.ask ? 'ask' : 'no'}"><b>${w.ok ? '✓' : w.ask ? '?' : '○'}</b><span>${w.url ? `<a href="${esc(w.url)}" target="_blank">${esc(w.text)}</a>` : esc(w.text)}</span></li>`).join('')}</ul></details>` : ''}` : `<p style="color:var(--mute)">Has not run yet${it.start ? `; starts at ${esc(it.start)}` : ''}.</p>`}</div>
-  ${myAsks.length ? sec(`Asks you · ${myAsks.length}`, `<div class="now">${myAsks.map((a) => `<div class="ncard"><div class="t" data-go="${a.id}">${esc(a.title)}</div><div class="opts">${askBtns(a, false)}</div></div>`).join('')}</div>`) : ''}
-  ${myPRs.length ? sec(`Its open PRs · ${myPRs.length}`, `<ul class="hist">${myPRs.map((p) => `<li><span><span class="pill solid ${CRIT[p.critical] || 'grey'}">${esc(p.critical)}</span></span><b><a href="#" data-go="${p.id}">${esc(p.repoShort)}#${p.number} ${esc(p.title)}</a></b></li>`).join('')}</ul>`) : ''}
+  <div class="hdr"><span class="pill ${WTONE[it.state]}">${esc(it.stateLabel)}</span>${it.score ? scoreHTML(it.score, true) : ''}${weekHTML(it.week)}<a class="pill" href="#" data-go="${g ? g.id : 'team'}"><span class="dot ${owner(it)}"></span>${esc(TEAM[it.team] || it.team)} ↗</a><span class="pill">${esc(it.runtime)}${it.model ? ` · ${esc(it.model)}` : ''}</span><span class="pill">${esc(it.days)}${it.start ? ` from ${esc(it.start)}` : ''}${it.hours ? ` · ${it.hours}h shift` : ''}</span>${it.jobFile ? `<a class="pill" href="${fileHref(it.jobFile)}" target="_blank" title="${esc(it.job)}">its job ↗</a>` : `<span class="pill" title="${esc(it.job)}">its job</span>`}</div>
+  ${whenRow({ updated: it.updated })}
+  ${it.blocker ? `<div class="blocker ${it.state === 'failed' ? 'red' : ''}"><b>${it.state === 'failed' ? 'Failed' : 'Blocked'}:</b> ${linkify(it.blocker)}${it.did ? `<small>${esc(it.did)}</small>` : ''}</div>` : ''}
+  ${myAsks.length || stuck.length ? sec(`Needs you · ${myAsks.length + stuck.length}`, `<div class="now">${myAsks.map((a) => `<div class="ncard"><div class="t" data-go="${a.id}">${esc(a.title)}</div><div class="opts">${askBtns(a, false)}</div><div class="s">opened ${fmtD(a.created)}${a.byDate ? ` · by ${fmtD(a.byDate)}` : ''}</div></div>`).join('')}</div>${stuck.length ? `<div class="tiles" style="margin-top:${myAsks.length ? 10 : 0}px">${stuck.join('')}</div>` : ''}`) : ''}
+  ${sec(it.state === 'running' ? 'Working now' : it.updated ? `Made · ${fmtDT(it.updated)}${it.score ? ` · ${scoreTxt(it.score)} done` : ''}` : 'Made', it.state === 'running' ? '<p style="color:var(--mute)">The record lands when it finishes.</p>' : it.updated ? `${clamp(it.headline, 'two')}<div class="tiles" style="margin-top:10px">${it.done.map((d) => tile(d)).join('')}</div>${it.work.length ? `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--you);font-size:12.5px">every step · ${it.work.length}${it.score ? ` · ${scoreTxt(it.score)} done` : ''}</summary><ul class="list" style="margin-top:8px">${it.work.map((w) => `<li class="${w.ok ? '' : w.ask ? 'ask' : 'no'}"><b>${w.ok ? '✓' : w.ask ? '?' : '○'}</b><span>${w.url ? `<a href="${esc(w.url)}" target="_blank">${esc(w.text)}</a>` : esc(w.text)}</span></li>`).join('')}</ul></details>` : ''}` : `<p style="color:var(--mute)">Has not run yet${it.start ? `; starts at ${esc(it.start)}` : ''}.</p>`)}
+  ${it.madeWeek?.length ? sec(`Earlier this week · ${it.madeWeek.length}`, `<details><summary style="cursor:pointer;color:var(--you);font-size:12.5px">show</summary><div class="tiles" style="margin-top:8px">${it.madeWeek.map((d) => tile(d)).join('')}</div></details>`) : ''}
+  ${myPRs.length ? sec(`Its open PRs · ${myPRs.length}`, `<ul class="hist">${myPRs.map((p) => `<li><span>${fmtD(p.created)} <span class="pill solid ${CRIT[p.critical] || 'grey'}">${esc(p.critical)}</span></span><b><a href="#" data-go="${p.id}">${esc(p.repoShort)}#${p.number} ${esc(p.title)}</a></b></li>`).join('')}</ul>`) : ''}
+  ${sec('Runs · 7 days', runs)}
+  ${it.explainers?.length ? sec(`Its pages · ${it.explainers.length}`, frames(it.explainers)) : ''}
   ${it.backlog.length ? sec(`Backlog · ${it.backlog.length} open`, `<details><summary style="cursor:pointer;color:var(--you);font-size:12.5px">show</summary><ul class="list" style="margin-top:8px">${it.backlog.map((l) => `<li><b>·</b><span>${linkify(l)}</span></li>`).join('')}</ul></details>`) : ''}
-  ${sec('Last 7 days', it.runs.length ? `<ul class="hist">${it.runs.map((r) => `<li><span>${esc(r.when)}</span><b>${r.ok ? '' : '<span class="pill red">failed</span> '}${linkify(r.text || 'no summary')}</b></li>`).join('')}</ul>` : '<p style="color:var(--mute)">No run in the last seven days.</p>')}
-  ${sec('Tell it', `<textarea placeholder="A rule, a correction, a thing to do. It reads this at the start of its next run and obeys it."></textarea><div style="margin-top:6px"><button class="btn go" data-act="tell-${esc(it.employee)}">Send</button> <span style="font-size:12px;color:var(--mute)">Lands in its playbook, dated and signed by you.</span></div>`)}`;
+  ${sec('Talk', `<div class="talk">${talk}<input class="in" data-tell placeholder="or one line for its playbook; it obeys it from the next run"><button class="btn" data-act="tell-${esc(it.employee)}">Send</button></div>`)}`;
+}
+// A team: its workers, what they made this week with dates, their open PRs with the why, the
+// initiatives they serve, and the team's ongoing explainer pages inline.
+function groupHTML(it) {
+  const ws = sortW(workers.filter((w) => it.workers.includes(w.id)));
+  const made = ws.flatMap((w) => [...w.done, ...(w.madeWeek || [])].map((d) => ({ ...d, by: w.title }))).sort((a, b) => (b.on || '').localeCompare(a.on || '')).slice(0, 18);
+  const myPRs = prs.filter((p) => ws.some((w) => w.employee === p.employee)).sort((a, b) => b.updated.localeCompare(a.updated));
+  const n = (k) => ws.filter((w) => w.state === k).length;
+  return `<h1>${esc(TEAM[it.team] || it.team)} · ${ws.length}</h1>
+  <div class="hdr"><a class="pill" href="#" data-go="team">the whole board ↗</a>${it.initiatives.map((id) => { const i = inis.find((x) => x.id === id); return i ? `<a class="pill ${i.health}" href="#" data-go="${i.id}">${esc(i.title.split(':')[0])} ${esc(i.num)}/${esc(i.target)} ↗</a>` : ''; }).join('')}</div>
+  ${whenRow({ updated: it.updated })}
+  <div class="kpis">${[['Ran today', ws.filter((w) => w.ranToday).length, 'green'], ['Failed', n('failed'), n('failed') ? 'red' : ''], ['Waiting', n('blocked'), n('blocked') ? 'amber' : ''], ['Made this week', made.length, '']].map(([l, v, c]) => `<div class="kpi"><div class="l">${l}</div><div class="v ${c}">${v}</div></div>`).join('')}</div>
+  ${sec('Workers', `<div class="tgrid">${ws.map(wtile).join('')}</div>`)}
+  ${made.length ? sec(`Made this week · ${made.length}`, `<div class="tiles">${made.map((d) => tile(d)).join('')}</div>`) : ''}
+  ${myPRs.length ? sec(`Open PRs · ${myPRs.length}`, `<ul class="hist">${myPRs.map((p) => `<li><span>${fmtD(p.created)} <span class="pill solid ${CRIT[p.critical] || 'grey'}">${esc(p.critical)}</span></span><b><a href="#" data-go="${p.id}">${esc(p.repoShort)}#${p.number} ${esc(p.title)}</a>${p.triage?.why_add ? `<div style="color:var(--mute);font-weight:400">${esc(p.triage.why_add)}</div>` : ''}</b></li>`).join('')}</ul>`) : ''}
+  ${sec(`Its pages · ${it.explainers.length}`, it.explainers.length ? frames(it.explainers) : `<p style="color:var(--mute)">No explainer page yet. Each researching worker keeps one (its memory folder, explainer.html); it appears here once a run links it.</p>`)}`;
+}
+// Sort (Tal, 2026-10-11: "there is no ability to sort"): the board by team, by state or by name;
+// the PRs by how critical, newest, oldest or largest; a ledger by any column.
+let teamSort = 'team', prSort = 'critical';
+try { teamSort = localStorage.getItem('panel-teamsort') || 'team'; prSort = localStorage.getItem('panel-prsort') || 'critical'; } catch {}
+const PRSORTS = { critical: ['most critical', (a, b) => ['High', 'Med', 'Low', '?'].indexOf(a.critical) - ['High', 'Med', 'Low', '?'].indexOf(b.critical) || b.updated.localeCompare(a.updated)], newest: ['newest push', (a, b) => b.updated.localeCompare(a.updated)], oldest: ['oldest first', (a, b) => a.created.localeCompare(b.created)], size: ['largest', (a, b) => (b.additions + b.deletions) - (a.additions + a.deletions)] };
+const prSorted = (rs) => [...rs].sort(PRSORTS[prSort][1]);
+const prSortSel = () => `<select class="sort" data-prsort title="order of the PRs">${Object.entries(PRSORTS).map(([k, [l]]) => `<option value="${k}" ${k === prSort ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+const sortChips = (key, cur, opts) => `<div class="sorts">sort ${opts.map(([k, l]) => `<button class="${k === cur ? 'on' : ''}" data-${key}="${k}">${l}</button>`).join('')}</div>`;
+const wtile = (w) => `<div class="wt ${w.state}" data-go="${w.id}"><div class="h"><i class="dot ${WTONE[w.state]}"></i><span>${esc(w.title)}</span></div><div class="w">${weekHTML(w.week)}<span>${esc(w.stateLabel)}${teamSort === 'state' ? ' · ' + esc(TEAM[w.team] || w.team) : ''}</span>${w.score ? `<span class="sc" title="done of tried, last run">${scoreTxt(w.score)}</span>` : ''}</div><div class="l" title="${esc(w.blocker || w.headline || w.job)}">${w.updated ? `<span class="cap">${fmtDT(w.updated)}</span> · ` : ''}${esc(w.blocker || (w.ranToday ? w.headline : w.job))}</div></div>`;
+function teamHTML() {
+  const n = (k) => workers.filter((w) => w.state === k).length;
+  const grouped = teamSort === 'team' ? byTeam().map(([t, ws]) => [TEAM[t], ws, `t-${t}`]) : teamSort === 'state' ? WORDER.map((k) => [k === 'ran' ? 'ran' : k === 'blocked' ? 'waiting' : k === 'paused' ? 'off' : k, workers.filter((w) => w.state === k)]).filter(([, ws]) => ws.length) : [['A to Z', [...workers].sort((a, b) => a.title.localeCompare(b.title))]];
+  return `<h1>Team · ${workers.length}</h1>
+  <div class="kpis">${[['Ran today', workers.filter((w) => w.ranToday).length, 'green'], ['Failed', n('failed'), n('failed') ? 'red' : ''], ['Waiting', n('blocked'), n('blocked') ? 'amber' : ''], ['Off', n('paused'), '']].map(([l, v, c]) => `<div class="kpi"><div class="l">${l}</div><div class="v ${c}">${v}</div></div>`).join('')}</div>
+  ${sortChips('teamsort', teamSort, [['team', 'by team'], ['state', 'by state'], ['name', 'by name']])}
+  ${grouped.map(([t, ws, go]) => sec(go ? `<a href="#" data-go="${go}">${esc(t)} · ${ws.length} ↗</a>` : `${esc(t)} · ${ws.length}`, `<div class="tgrid">${ws.map(wtile).join('')}</div>`)).join('')}`;
+}
+let sheetSort = { col: '', dir: 1 };
+const num = (v) => { const n = Number(String(v).replace(/[,$]/g, '')); return Number.isFinite(n) && String(v).trim() !== '' ? n : null; };
+const fmt = (v) => { const n = num(v); return n != null && Math.abs(n) >= 1000 ? n.toLocaleString('en-US') : esc(v); };
+// A ledger row: the name (its link up front), the state, why add, why not, the last note dated.
+function sheetRows(it) {
+  const hasX = it.rows.some((r) => r.extra);
+  let rows = it.rows;
+  if (sheetSort.col) { const c = sheetSort.col; rows = [...rows].sort((a, b) => { const x = a[c] ?? '', y = b[c] ?? ''; const nx = num(x), ny = num(y); return (nx != null && ny != null ? nx - ny : String(x).localeCompare(String(y))) * sheetSort.dir; }); }
+  return rows.map((r) => `<tr data-state="${r.state}"><td class="n" title="${esc(r.about)}">${r.link ? `<a href="${esc(r.link)}" target="_blank">${esc(r.name)} ↗</a><small>${esc(host(r.link))}</small>` : `${esc(r.name)}<small style="color:var(--red)">no link</small>`}</td><td><span class="st ${r.state}">${esc(r.status || r.state)}</span></td><td class="w p">${clamp(r.pro, 'two')}</td><td class="w m">${clamp(r.con, 'two')}</td><td class="w">${clamp(r.why, 'two')}</td><td style="white-space:nowrap;color:var(--mute)">${esc(r.when.slice(0, 10))}</td>${hasX ? `<td class="x">${fmt(r.extra)}</td>` : ''}</tr>`).join('');
 }
 function sheetHTML(it) {
   const total = it.total || 1;
-  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill">${it.total} rows</span><span class="pill">${esc(it.file)}</span>${it.updated ? `<span class="pill">last ${esc(it.updated.slice(0, 10))}</span>` : ''}</div>
+  const th = (c, l) => `<th data-col="${c}" class="${sheetSort.col === c ? 'on' : ''}">${l}${sheetSort.col === c ? (sheetSort.dir > 0 ? ' ↑' : ' ↓') : ''}</th>`;
+  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill">${it.total} rows</span><span class="pill">${esc(it.file)}</span></div>
+  ${whenRow({ updated: it.updated })}
   <p style="margin:0 0 10px;color:var(--mute)">${esc(it.what)}</p>
   <div class="card"><div class="seg">${['live', 'waiting', 'blocked', 'todo', 'off'].map((s) => `<b class="${s}" style="width:${(it.counts[s] / total) * 100}%" data-sf="${s}" title="${s}: ${it.counts[s]}"></b>`).join('')}</div>
   <div class="tools">${['all', 'live', 'waiting', 'blocked', 'todo', 'off'].map((s) => `<button class="btn sm" data-sf="${s}">${s === 'all' ? `all ${it.total}` : `${s} ${it.counts[s]}`}</button>`).join('')}<input placeholder="find a row" data-sq></div>
-  <table class="sheet"><thead><tr><th>Row</th><th>Status</th><th>Why it is where it is</th><th>When</th>${it.rows.some((r) => r.extra) ? '<th></th>' : ''}</tr></thead><tbody>${it.rows.map((r) => `<tr data-state="${r.state}"><td class="n" title="${esc(r.name)}">${r.link ? `<a href="${esc(r.link)}" target="_blank">${esc(r.name)}</a>` : esc(r.name)}</td><td><span class="st ${r.state}">${esc(r.status || r.state)}</span></td><td class="w">${linkify(r.why)}</td><td style="white-space:nowrap;color:var(--mute)">${esc(r.when.slice(0, 10))}</td>${it.rows.some((x) => x.extra) ? `<td style="color:var(--mute)">${esc(r.extra)}</td>` : ''}</tr>`).join('')}</tbody></table></div>`;
+  <table class="sheet"><thead><tr>${th('name', 'Row')}${th('status', 'Status')}${th('pro', 'Why add')}${th('con', 'Why not, the gate')}${th('why', 'Last note')}${th('when', it.whenLabel || 'When')}${it.rows.some((r) => r.extra) ? th('extra', it.extraLabel || '') : ''}</tr></thead><tbody>${sheetRows(it)}</tbody></table></div>`;
 }
 function eventHTML(it) {
-  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill">${esc(it.when)}</span><span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span><span class="pill">${esc(it.tier)}</span></div>
-  ${sec('Why', esc(it.why))}${sec('What changed', esc(it.what))}${sec('Undo', esc(it.undo || 'revert the PR'))}${sec('Proof', (it.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a>`).join(' · '))}`;
+  const p = prOfUrl(it.links?.[0]?.url);
+  return `<h1>${esc(it.title)}</h1><div class="hdr"><span class="pill"><span class="dot ${owner(it)}"></span>${esc(it.who)}</span><span class="pill">${esc(it.tier)}</span></div>
+  ${whenRow({ done: it.done || it.updated })}
+  ${it.why || it.what ? `<div class="vis"><div>${sec('Why, in the author\'s words', md(it.why) || '<p style="color:var(--mute)">no Why in the body</p>')}</div><div>${sec('What changed', md(it.what) || '<p style="color:var(--mute)">no What in the body</p>')}</div></div>` : ''}
+  ${trio([['Verified', it.verified], ['Undo', it.undo || 'revert the PR']])}
+  ${it.explainers?.length ? sec('Explainer pages', frames(it.explainers.map((u) => ({ url: u, label: u.split('/').pop().replace(/\.html?$/, '').replace(/[-_]/g, ' ') })))) : ''}
+  ${sec('Proof', (it.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a>`).join(' · '))}`;
 }
 function summaryHTML(it) {
-  const kpi = (label, val, sub, cls = '', go = '') => `<div class="kpi" data-go="${go}"><div class="l">${label}</div><div class="v ${cls}">${val}</div><div class="s">${sub}</div></div>`;
+  const kpi = (label, val, sub, cls = '', go = '', href = '') => `<a class="kpi" ${href ? `href="${esc(href)}" target="_blank"` : `data-go="${go}"`}><div class="l">${label}</div><div class="v ${cls}">${val}</div><div class="s" title="${esc(sub)}">${sub}</div></a>`;
   const STATE = { done: 'green', open: 'red', plan: 'amber', partly: 'amber', prototype: 'grey' };
-  const days = [2, 1, 0].map((n) => { const d = new Date(Date.now() - n * 864e5); return [d.toLocaleDateString('en-GB', { weekday: 'long' }), d.toISOString().slice(0, 10)]; });
+  const days = [2, 1, 0].map((n) => { const d = new Date(Date.now() - n * DAY); return [d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }), d.toISOString().slice(0, 10)]; });
   const deploy = byRec('merge and deploy');
   const auth = inis.find((i) => i.id === 'i-authority');
+  const rev = D.revenue || {};
   const failed = workers.filter((w) => w.state === 'failed'), blocked = workers.filter((w) => w.state === 'blocked'), ran = workers.filter((w) => w.ranToday);
-  const now = [...decs, ...asks.filter((a) => a.type === 'choice'), ...asks.filter((a) => a.type !== 'choice')];
+  const now = [...decs, ...asks.filter((a) => a.type === 'choice'), ...asks.filter((a) => a.type !== 'choice')].sort((a, b) => (a.byDate || '9') .localeCompare(b.byDate || '9') || (a.created || '').localeCompare(b.created || ''));
+  const usd = (n) => `$${Number(n ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  const closedToday = (it.closed || []).filter((c) => c.at.slice(0, 10) === new Date().toISOString().slice(0, 10));
   return `<h1>${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</h1>
   ${D.errors?.length ? `<div class="err">could not read: ${esc(D.errors.join(' · '))}</div>` : ''}
   ${D.unreviewed.length ? `<p class="pill red" style="margin:0 0 12px">${D.unreviewed.length} PRs not reviewed at their current commit: ${esc(D.unreviewed.join(', '))}</p>` : ''}
   <div class="kpis">
-    ${auth ? kpi('Authority · Ahrefs DR', `${esc(auth.num)} <small>/ ${esc(auth.target)}</small>`, auth.trend, auth.health === 'red' ? 'red' : '', auth.id) : ''}
-    ${kpi('For you', now.length, `${decs.length + asks.filter((a) => a.type === 'choice').length} to decide · ${asks.filter((a) => a.type !== 'choice').length} to send or clear`, now.length > 6 ? 'red' : '', now[0]?.id || 'summary')}
-    ${kpi('PRs open', prs.length, `${deploy.length} deploy now · ${byRec('needs your eyes').length} your eyes · ${byRec('split').length} split`, '', prs[0]?.id || 'summary')}
-    ${kpi('Team today', `${ran.length} <small>/ ${workers.filter((w) => !w.paused).length}</small>`, `${failed.length} failed · ${blocked.length} waiting · ${workers.filter((w) => w.paused).length} off`, failed.length ? 'red' : '', failed[0]?.id || blocked[0]?.id || 'w-chief')}
+    ${kpi('Revenue · Polar MRR', rev.blind ? '?' : `${usd(rev.mrr)} <small>/ mo</small>`, rev.blind ? esc(rev.blind) : `${rev.paying} paying · ${rev.orders} orders ever${rev.lastOrder ? ` · last ${esc(rev.lastOrder.at)}` : ''} · read ${rel(rev.updated)}`, rev.blind ? 'red' : rev.mrr > 0 ? 'green' : '', '', rev.proof || 'https://polar.sh/dashboard')}
+    ${auth ? kpi('Authority · Ahrefs DR', `${esc(auth.num)} <small>/ ${esc(auth.target)}</small>`, `${auth.trend}${auth.readAt ? ` · read ${fmtD(auth.readAt)}` : ''}`, auth.health === 'red' ? 'red' : '', auth.id) : ''}
+    ${kpi('For you', now.length + deploy.length, `${decs.length + asks.filter((a) => a.type === 'choice').length} to decide · ${asks.filter((a) => a.type !== 'choice').length} to send · ${deploy.length} PRs to deploy${closedToday.length ? ` · ${closedToday.length} closed today` : ''}`, now.length > 6 ? 'red' : '', now[0]?.id || 'summary')}
+    ${kpi('Team today', `${ran.length} <small>/ ${workers.filter((w) => !w.paused).length}</small>`, `${failed.length} failed · ${blocked.length} waiting · ${workers.filter((w) => w.paused).length} off`, failed.length ? 'red' : '', failed[0]?.id || blocked[0]?.id || 'team')}
   </div>
-  <div class="card"><h3>For you · ${now.length} · one click each, the default is what happens if you say nothing${now.length > 6 ? ` · the first 6 here, the rest in the rail` : ''}</h3><div class="now">${now.slice(0, 6).map((d) => `<div class="ncard"><div class="t" data-go="${d.id}"><span class="dot ${owner(d)}"></span> ${esc(d.title)}</div><div class="opts">${d.kind === 'decision' ? optsHTML(d, false) : askBtns(d, false)}</div><div class="s">${esc(d.by ? 'by ' + d.by + ' · ' : '')}${esc(d.default ? 'default: ' + d.default : d.who || '')}</div></div>`).join('') || '<span class="pill green">nothing waits on you</span>'}</div></div>
-  <div class="card"><h3>${prs.length} open PRs, by what to do with them · ${deploy.length ? `the ${deploy.length} green ones are one deploy` : 'none ready to deploy'}</h3>${boardHTML()}</div>
-  <div class="vis"><div class="card"><h3>Initiatives, the why with its number</h3><div class="inits">${inis.map((i) => `<div class="in" data-go="${i.id}"><div><div class="t"><span class="dot ${i.health}"></span> ${esc(i.title)}</div><div class="m">${esc(i.trend)}${i.blind ? ' · <span style="color:var(--red)">blind</span>' : ''}</div></div>${spark(i.series, 110, 26, `var(--${i.health === 'red' ? 'red' : i.health === 'amber' ? 'amber' : 'cos'})`)}<div class="nn">${esc(i.num)}<small> / ${esc(i.target)}</small></div></div>`).join('')}</div></div>
-  <div class="card"><h3>Went live, last 3 days · ${evs.length} merges</h3><div class="tl">${days.map(([name, iso]) => { const es = evs.filter((e) => (e.updated || '').startsWith(iso)); return `<div class="day"><h4>${name} · ${es.length}</h4>${es.slice(0, 8).map((e) => `<span class="ev ${e.tier === 'silent' ? 'm' : ''}" data-go="${e.id}" title="${esc(e.title)}">${esc(e.title.replace(/^(site|engine|master)#\d+ /, ''))}</span>`).join('')}${es.length > 8 ? `<span class="ev m">${es.length - 8} more in the rail</span>` : ''}</div>`; }).join('')}</div></div></div>
-  <div class="card"><h3>Team today · ${ran.length} ran · ${failed.length} failed · ${blocked.length} waiting</h3><div class="now">${[...failed, ...blocked, ...ran.filter((w) => !failed.includes(w) && !blocked.includes(w)).slice(0, 8)].map((w) => `<div class="ncard"><div class="t" data-go="${w.id}"><span class="dot ${WTONE[w.state]}"></span> ${esc(w.title)}</div><div class="s">${esc((w.blocker || w.headline || w.job).slice(0, 160))}</div></div>`).join('')}</div></div>
-  <div class="card"><h3>Ledgers</h3><div class="inits">${sheets.map((s) => `<div class="in" data-go="${s.id}"><div><div class="t">${esc(s.title)}</div><div class="m">${s.counts.live} live · ${s.counts.waiting} waiting · ${s.counts.blocked} blocked · ${s.counts.todo} to do</div></div><div class="seg" style="margin:0;width:110px">${['live', 'waiting', 'blocked', 'todo', 'off'].map((k) => `<b class="${k}" style="width:${(s.counts[k] / (s.total || 1)) * 100}%"></b>`).join('')}</div><div class="nn">${s.total}</div></div>`).join('')}</div></div>
-  <details class="card"><summary style="cursor:pointer;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600">What you told me, and where it stands · ${it.said.length}</summary><div class="said" style="margin-top:10px">${[...it.said].reverse().map((s) => `<span class="pill ${STATE[s.state] || 'grey'}">${esc(s.state)}</span><div class="q">${esc(s.quote)}<small>${esc(s.on)} · ${esc(s.stands)}</small></div>`).join('')}</div></details>`;
+  <div class="card"><h3>For you · ${now.length} · dated ones first · the default is what happens if you say nothing${now.length > 6 ? ` · the first 6 here, the rest in the rail` : ''}</h3><div class="now">${now.slice(0, 6).map((d) => `<div class="ncard"><div class="t" data-go="${d.id}"><span class="dot ${owner(d)}"></span> ${esc(d.title)}</div><div class="opts">${d.kind === 'decision' ? optsHTML(d, false) : askBtns(d, false)}</div><div class="s">opened ${fmtD(d.created)}${d.byDate ? ` · <span style="color:var(--red)">by ${fmtD(d.byDate)}</span>` : ''}${d.default ? ` · default: ${esc(d.default)}` : d.who ? ` · ${esc(d.who)}` : ''}</div></div>`).join('') || '<span class="pill green">nothing waits on you</span>'}</div></div>
+  <div class="card"><h3>${prs.length} open PRs, by what to do with them · ${deploy.length ? `the ${deploy.length} green ones are one deploy` : 'none ready to deploy'} · ${prSortSel()}</h3>${boardHTML()}</div>
+  <div class="vis"><div class="card"><h3>Initiatives, the why with its number</h3><div class="inits">${inis.map((i) => `<div class="in" data-go="${i.id}"><div><div class="t"><span class="dot ${i.health}"></span> ${esc(i.title)}</div><div class="m">${esc(i.trend)}${i.blind ? ' · <span style="color:var(--red)">blind</span>' : ''} · ${fmtD(i.readAt || i.updated)}</div></div>${spark(i.series, 110, 26, `var(--${i.health === 'red' ? 'red' : i.health === 'amber' ? 'amber' : 'cos'})`)}<div class="nn">${esc(i.num)}<small> / ${esc(i.target)}</small></div></div>`).join('')}</div></div>
+  <div class="card"><h3>Went live, last 3 days · ${evs.length} merges</h3><div class="tl">${days.map(([name, iso]) => { const es = evs.filter((e) => (e.updated || '').startsWith(iso)); return `<div class="day"><h4>${name} · ${es.length}</h4>${es.slice(0, 8).map((e) => `<span class="ev ${e.tier === 'silent' ? 'm' : ''}" data-go="${e.id}" title="${esc(e.title)} · ${fmtDT(e.updated)}"><small>${new Date(e.updated).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</small><span>${esc(e.title.replace(/^(site|engine|master)#\d+ /, ''))}</span></span>`).join('')}${es.length > 8 ? `<span class="ev m"><small></small><span>${es.length - 8} more in the rail</span></span>` : ''}</div>`; }).join('')}</div></div></div>
+  <div class="card"><h3>Team · ${ran.length} ran · ${failed.length} failed · ${blocked.length} waiting · <a href="#" data-go="team">the board</a> · a team name opens the team</h3>${teamStrip()}</div>
+  <div class="card"><h3>Ledgers</h3><div class="inits">${sheets.map((s) => `<div class="in" data-go="${s.id}"><div><div class="t">${esc(s.title)}</div><div class="m">${s.counts.live} live · ${s.counts.waiting} waiting · ${s.counts.blocked} blocked · ${s.counts.todo} to do${s.updated ? ` · last ${esc(s.updated.slice(0, 10))}` : ''}</div></div><div class="seg" style="margin:0;width:110px">${['live', 'waiting', 'blocked', 'todo', 'off'].map((k) => `<b class="${k}" style="width:${(s.counts[k] / (s.total || 1)) * 100}%"></b>`).join('')}</div><div class="nn">${s.total}</div></div>`).join('')}</div></div>
+  <details class="card"><summary style="cursor:pointer;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600">Decided and closed · ${(it.closed || []).length}</summary><ul class="hist" style="margin-top:10px">${(it.closed || []).map((c) => `<li><span>${fmtDT(c.at)}</span><b>${esc(c.title)}${c.what && c.what !== 'done' ? ` <span style="color:var(--mute);font-weight:400">· ${esc(c.what)}</span>` : ''}</b></li>`).join('') || '<li><span></span><b>nothing yet</b></li>'}</ul></details>
+  <details class="card"><summary style="cursor:pointer;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600">What you told me, and where it stands · ${it.said.length}</summary><div class="said" style="margin-top:10px">${[...it.said].reverse().map((s) => `<span class="pill ${STATE[s.state] || 'grey'}">${esc(s.state)}</span><span class="d">${fmtD(s.on)}</span><div class="q">${esc(s.quote)}<small>${esc(s.stands)}</small></div>`).join('')}</div></details>`;
 }
 // Buttons that act: POST to home, which runs status.mjs act <id> (n = the button, value = text).
 async function act(id, n = 0, value = '') {
@@ -404,47 +643,63 @@ document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-act],[data-fix]'); if (!b) return;
   e.preventDefault();
   let id, n = 0, value = '';
-  if (b.dataset.act) { id = b.dataset.act; value = /^(panel-note-|tell-)/.test(id) ? b.closest('.sec')?.querySelector('textarea')?.value?.trim() : b.dataset.value || ''; if (/^(panel-note-|tell-)/.test(id) && !value) return; }
+  if (b.dataset.act) { id = b.dataset.act; value = /^(panel-note-|tell-)/.test(id) ? b.closest('.talk')?.querySelector('[data-tell]')?.value?.trim() : b.dataset.value || ''; if (/^(panel-note-|tell-)/.test(id) && !value) return; }
   else { id = b.dataset.fix; n = Number(b.dataset.n); if (b.dataset.from) { value = document.querySelector(`[data-input="${b.dataset.from}"]`)?.value?.trim() || ''; if (!value) return; } }
   const was = b.textContent; b.textContent = '…';
   const j = await act(id, n, value);
   b.textContent = j.ok ? 'done' : (j.message || j.error || 'failed');
-  if (j.ok && !/^(panel-note-|tell-)/.test(id)) setTimeout(() => location.reload(), 700);
-  else if (!j.ok) setTimeout(() => (b.textContent = was), 2500);
+  if (j.ok && /^(panel-note-|tell-)/.test(id)) { const i = b.closest('.talk')?.querySelector('[data-tell]'); if (i) i.value = ''; setTimeout(() => (b.textContent = was), 1500); }
+  else if (j.ok) setTimeout(() => location.reload(), 700);
+  else setTimeout(() => (b.textContent = was), 2500);
 });
-const R = { pr: prHTML, decision: decisionHTML, ask: askHTML, initiative: initiativeHTML, worker: workerHTML, sheet: sheetHTML, event: eventHTML, summary: summaryHTML };
-function show(id) {
+// Talk: home opens a Terminal window on the session. If home refuses, the command is copied instead.
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-term]'); if (!b) return;
+  e.preventDefault();
+  const r = await fetch('/open', { method: 'POST', headers: { 'x-home': '1', 'content-type': 'application/json' }, body: JSON.stringify({ command: b.dataset.term }) }).catch(() => null);
+  if (r?.ok) { b.classList.add('ok'); const was = b.innerHTML; b.innerHTML = b.classList.contains('ib') ? '✓' : 'opened in Terminal'; setTimeout(() => { b.innerHTML = was; b.classList.remove('ok'); }, 1800); }
+  else { navigator.clipboard?.writeText(b.dataset.term); const was = b.innerHTML; b.innerHTML = b.classList.contains('ib') ? '⧉' : 'copied, paste it in a terminal'; setTimeout(() => (b.innerHTML = was), 1800); }
+});
+const R = { pr: prHTML, decision: decisionHTML, ask: askHTML, initiative: initiativeHTML, worker: workerHTML, team: teamHTML, group: groupHTML, sheet: sheetHTML, event: eventHTML, summary: summaryHTML };
+// Every screen is a history entry, so the browser's back button returns to the one before it
+// (Tal, 2026-10-12: "going backwards in page doesn't return to the previous page").
+function show(id, { push = true } = {}) {
   const it = items.find((x) => x.id === id); if (!it) return;
   sel = id; document.getElementById('pane').innerHTML = R[it.kind](it); document.getElementById('pane').scrollTop = 0;
-  if (!D.standalone) { renderRail(); document.querySelector('.row.sel')?.scrollIntoView({ block: 'nearest' }); history.replaceState(null, '', `#${id}`); }
+  if (!D.standalone) { renderRail(); document.querySelector('.row.sel')?.scrollIntoView({ block: 'nearest' }); if (push && location.hash !== `#${id}`) history.pushState({ id }, '', `#${id}`); else if (!push) history.replaceState({ id }, '', `#${id}`); }
   try { localStorage.setItem('panel-sel', id); } catch {}
 }
+window.show = show;
+window.addEventListener('popstate', (e) => { const id = e.state?.id || location.hash.slice(1); if (id && id !== sel) show(id, { push: false }); });
 document.addEventListener('click', (e) => {
-  if (e.target.closest('[data-act],[data-fix]')) return;
+  if (e.target.closest('[data-act],[data-fix],[data-term]')) return;
   const c = e.target.closest('[data-copy]'); if (c) { navigator.clipboard?.writeText(c.dataset.copy); c.classList.add('ok'); setTimeout(() => c.classList.remove('ok'), 900); return; }
   const r = e.target.closest('.row'); if (r) return show(r.dataset.id);
   const f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; return renderRail(); }
-  const g = e.target.closest('.group h2'); if (g) { const id = g.parentElement.dataset.g; open.has(id) ? open.delete(id) : open.add(id); return renderRail(); }
+  if (e.target.closest('select')) return;
+  const g = e.target.closest('.group h2'); if (g) { const el = g.parentElement; const id = el.dataset.g; const go = el.dataset.gogo; if (go && sel !== go) { open.add(id); try { localStorage.setItem('panel-open', JSON.stringify([...open])); } catch {} return show(go); } open.has(id) ? open.delete(id) : open.add(id); try { localStorage.setItem('panel-open', JSON.stringify([...open])); } catch {} return renderRail(); }
   const go = e.target.closest('[data-go]'); if (go) { e.preventDefault(); return show(go.dataset.go); }
+  const run = e.target.closest('[data-run]'); if (run) { const it = items.find((x) => x.id === sel); document.querySelectorAll('.run').forEach((x) => x.classList.toggle('sel', x === run)); document.getElementById('runtext').innerHTML = linkify(it.runs[Number(run.dataset.run)].text || 'no summary'); return; }
+  const ts = e.target.closest('[data-teamsort]'); if (ts) { teamSort = ts.dataset.teamsort; try { localStorage.setItem('panel-teamsort', teamSort); } catch {} return show(sel, { push: false }); }
+  const th = e.target.closest('table.sheet th[data-col]'); if (th) { const c = th.dataset.col; sheetSort = { col: c, dir: sheetSort.col === c ? -sheetSort.dir : 1 }; show(sel, { push: false }); return; }
   const sf = e.target.closest('[data-sf]'); if (sf) { const s = sf.dataset.sf; document.querySelectorAll('table.sheet tbody tr').forEach((tr) => tr.classList.toggle('hide', s !== 'all' && tr.dataset.state !== s)); return; }
-  if (e.target.id === 'whoBtn') document.getElementById('legend').classList.toggle('hide');
+  const cl = e.target.closest('.clamp'); if (cl && !e.target.closest('a')) cl.classList.toggle('open');
 });
+document.addEventListener('change', (e) => { const p = e.target.closest('[data-prsort]'); if (!p) return; prSort = p.value; try { localStorage.setItem('panel-prsort', prSort); } catch {} show(sel, { push: false }); });
 document.addEventListener('input', (e) => { const q = e.target.closest('[data-sq]'); if (!q) return; const s = q.value.toLowerCase(); document.querySelectorAll('table.sheet tbody tr').forEach((tr) => tr.classList.toggle('hide', !!s && !tr.textContent.toLowerCase().includes(s))); });
 document.addEventListener('keydown', (e) => {
   if (['TEXTAREA', 'INPUT'].includes(e.target.tagName)) return;
   const v = visible(); const i = v.findIndex((x) => x.id === sel);
   if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); show(v[Math.min(v.length - 1, i + 1)]?.id); }
   if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); show(v[Math.max(0, i - 1)]?.id); }
-  if (e.key === 'Enter' || e.key === '1') { const a = document.querySelector('.pane .card a.btn'); if (a) window.open(a.href, '_blank'); }
+  if (e.key === 'Enter' || e.key === '1') { const a = document.querySelector('.pane .card a.btn, .pane .opt a.btn'); if (a) window.open(a.href, '_blank'); }
 });
-// ---------- top bar, legend ----------
-document.getElementById('built').textContent = `built ${D.builtAt} · GitHub every 10 min, the run records and the ledgers live`;
-document.getElementById('since').textContent = `${items.filter(isNew).length} moved since you looked, ${since.toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`;
-document.getElementById('people').innerHTML = (D.people || []).map((p) => `<div class="person ${/live/.test(p.state) ? 'live' : ''}" title="${esc(p.what)}"><span class="dot ${p.dot}"></span><span><div class="nm">${esc(p.name)}</div><div class="st">${esc(p.state)}</div></span>${copyBtn(p.cmd, p.cmd.replace(/([0-9a-f]{8})-[0-9a-f-]{27}/, '$1…'))}</div>`).join('') + `<button class="whoBtn" id="whoBtn">who does what</button>`;
-document.getElementById('legend').innerHTML = `<b>Who does what</b> · click a name to copy it, the arrow opens it here<div class="who">${(D.who || []).filter((w) => w.status !== 'ended').map((w) => `<span class="dot ${w.team === 'assistant' ? 'pa' : 'cos'}"></span><span><b>${copyBtn(w.id, w.id)}</b> <a href="#" data-go="w-${esc(w.id)}">↗</a> ${esc(w.job)}${w.status === 'paused' ? ' <span class="pill">paused</span>' : ''}</span><span>${esc(w.days)}</span>`).join('')}</div>`;
+// ---------- top bar ----------
+document.getElementById('meta').innerHTML = `built ${esc(D.builtAt)} · <b>${items.filter(isNew).length} moved</b> since you looked ${esc(since.toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit' }))}`;
+document.getElementById('people').innerHTML = (D.people || []).map((p) => `<div class="person ${/live/.test(p.state) ? 'live' : ''}" title="${esc(p.what)}&#10;${esc(p.cmd)}"><span class="dot ${p.dot}"></span><span><div class="nm">${esc(p.name)}</div><div class="st">${esc(p.state)}</div></span>${talkBtn(p.cmd, '', 'ib')}${p.cmd ? `<button class="ib" data-copy="${esc(p.cmd)}" title="copy ${esc(p.cmd)}">⧉</button>` : ''}</div>`).join('');
 if (!D.standalone) renderRail();
 let first = location.hash.slice(1) || D.select || null; if (!first) { try { first = localStorage.getItem('panel-sel'); } catch {} }
-show(items.find((x) => x.id === first)?.id || items[0]?.id);
+show(items.find((x) => x.id === first)?.id || items[0]?.id, { push: false });
 </script>
 </body>
 </html>
