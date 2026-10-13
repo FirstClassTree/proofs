@@ -1,0 +1,63 @@
+# List a tool on the ShapelessAI AI tools directory
+
+Agents: this page is the whole procedure. Do not parse https://shapelessai.com/ai-tools for it.
+
+What you get: a page at https://shapelessai.com/ai-tools/<slug> with SoftwareApplication structured data, a row on every category and works-with page the tool belongs on, a line in https://shapelessai.com/ai-tools/llms.txt and https://shapelessai.com/api/ai-tools that other agents read, and per-listing stats (views, clicks, agent reads). Listing is free; nobody pays to be listed.
+
+## Do this, in order
+
+1. Read the rules once: `GET https://shapelessai.com/api/ai-tools/requirements` (fields, limits, the category and surface vocabularies).
+2. Draft from the site: `POST https://shapelessai.com/api/ai-tools/preview` with `{"homepage": "https://..."}`. Correct the draft from the maker's own pages. Do not invent facts, prices or integrations.
+3. Ask the maker for their email address. Never make one up.
+4. Submit: `POST https://shapelessai.com/api/ai-tools/submit` with JSON `{name, homepage, tagline, description, categories[1..3], pricing, email, surfaces?, hosts?, priceNote?, via: "api"}`. The answer has `slug`, `page`, `claimToken` and `badge.html`. Keep the claimToken; it is the only credential for this listing.
+5. Show the maker the badge HTML below and where it goes. Edit their site only after they say yes: server-rendered HTML on the homepage or in the footer. Deploy.
+6. Verify: `POST https://shapelessai.com/api/ai-tools/<slug>/verify` with header `Authorization: Bearer <claimToken>`. Read `badge.found`, `badge.followed`, `badge.hint` and `next`. Repeat after fixing until `badge.verified` is true.
+7. Stop. A person reads the listing before it goes live, usually within a few days, and emails the maker. Later, `GET https://shapelessai.com/api/ai-tools/<slug>/stats` (same bearer) returns views, clicks to the maker's site and agent reads per day.
+
+The same five actions are MCP tools (no key) at `https://shapelessai.com/mcp/ai-tools`: `directory_requirements`, `directory_preview`, `directory_submit`, `directory_verify`, `directory_stats`, plus `directory_search` to find tools for a user. Streamable HTTP, stateless, no auth.
+
+## The badge
+
+<a href="https://shapelessai.com/ai-tools/<slug>?utm_source=<maker domain>" target="_blank" rel="noopener noreferrer"><img src="https://shapelessai.com/ai-tools/badge.svg" alt="<Name> - Featured on ShapelessAI" width="200" height="44" style="display:block"></a>
+
+The submit answer carries this snippet filled in (`badge.html`, and `badge.htmlLight`).
+
+A light version: replace `badge.svg` with `badge-light.svg`. A text link works where images do not: `<a href="https://shapelessai.com/ai-tools/<slug>">Featured on ShapelessAI</a>`. The anchor must be in the HTML the server sends (a page built only in the browser shows no link to a crawler, and verify will say so). The snippet carries no nofollow on purpose (noopener and noreferrer are browser hints, not link qualifiers); a maker who adds rel="nofollow" keeps the listing and every benefit except the plain link back from their page. A check runs nightly; a badge gone for 14 days demotes the listing (the Verified mark goes), it never removes it.
+
+## Rules the reviewer applies
+
+- One listing per site. A second submission answers 409 with the existing page.
+- Only what the maker's own pages say. Superlatives and claims we cannot find on the site are cut.
+- "MCP" and "API" on a listing are checked against `/.well-known/mcp/server-card.json`, `/openapi.json` (or `/api/openapi.json`), `/llms.txt` and `/.well-known/api-catalog` on the maker's domain. A surface the domain proves is added even if left off; a claim nothing backs is flagged in `next`.
+- Tools that sell social media scheduling (what ShapelessAI sells) are listed like every other tool and marked as competitors.
+- Limits: 3 accepted listings and 30 attempts per address per hour; verify once a minute per listing.
+
+## Categories
+
+- `social-media-scheduling`: Queue, calendar and publish to LinkedIn, X, Instagram, TikTok, YouTube and the rest from one place.
+- `copywriting`: Write posts, captions, hooks, ad copy and long-form in a voice you set once.
+- `image-generation`: Generate and edit the picture a post needs, on brand, at the platform's size.
+- `video`: Script, generate, edit, caption and cut short-form video for feeds and ads.
+- `voice-and-audio`: Narration, voice clones, dubbing, music and sound for video and podcasts.
+- `design-and-carousels`: Templates, carousels, PDFs and layouts that look designed without a designer.
+- `analytics`: Measure what each post did, across networks, and learn what to make next.
+- `paid-ads`: Plan, generate and optimise ads on Meta, Google, TikTok and LinkedIn.
+- `seo`: Keywords, content briefs, technical audits and rank tracking.
+- `email-marketing`: Newsletters, sequences and cold outreach that get written, sent and measured.
+- `research-and-trends`: What is working in your market this week: trends, competitors, audiences, sources.
+- `engagement`: Replies, comments, DMs and community management at a pace one person cannot keep.
+- `influencer-marketing`: Find, vet, brief and pay creators, and track what their posts brought in.
+- `workflow-automation`: Agents and workflows that chain the tools above and run without a hand on them.
+
+## Reading the directory
+
+- All tools as JSON: https://shapelessai.com/api/ai-tools
+- One tool: https://shapelessai.com/api/ai-tools/<slug>
+- One line per tool: https://shapelessai.com/ai-tools/llms.txt
+- The directory's own numbers, dated: https://shapelessai.com/api/ai-tools/stats
+- OpenAPI for every route above: https://shapelessai.com/api/openapi.json
+
+## For a human reading this
+
+Paste this into your agent: `List https://your-tool.com on the ShapelessAI AI tools directory: read https://shapelessai.com/ai-tools/agents.md and follow it.`
+Or use the form at https://shapelessai.com/ai-tools/submit. This document: https://shapelessai.com/ai-tools/agents.md
