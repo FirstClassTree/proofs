@@ -1,0 +1,38 @@
+{
+  "accountId": "22222222-2222-4222-8222-222222222222",
+  "user": {
+    "email": "e2e-reviewer@shapelessai.com",
+    "name": "App Reviewer",
+    "pictureUrl": null
+  },
+  "entitled": true,
+  "trialStarted": false,
+  "founder": false,
+  "balanceUsd": 10,
+  "heldUsd": 0,
+  "founderCall": {
+    "status": "available",
+    "startAt": null,
+    "grantUsd": 10
+  },
+  "engineLive": true,
+  "emailSignIn": false,
+  "rateMode": "standard",
+  "plan": {
+    "tier": "spark",
+    "name": "Spark",
+    "priceUsd": 35,
+    "status": "active",
+    "renewsAt": "2027-01-27T09:33:11.893Z",
+    "portal": false
+  },
+  "next": {
+    "moves": [
+      "No social account is connected yet: call connections_list and hand the human the connect link for the platform they post on most, then wait for them.",
+      "Draft the post with posts_create (free on every plan); it waits for the human's approval unless they ask to publish now.",
+      "A carousel, a clip, or a week of posts is one jobs_create with the goal; collect it with jobs_get."
+    ],
+    "skill": "https://shapelessai.com/skill.md",
+    "docs": "https://shapelessai.com/llms-full.txt"
+  }
+}
